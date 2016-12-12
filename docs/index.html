@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html><head><meta charset="UTF-8"><title>ComponentTemplate</title><style>html,head,body { padding:0; margin:0; }
-body { font-family: calibri, helvetica, arial, sans-serif; }</style><script type="text/javascript">
+body { font-family: calibri, helvetica, arial, sans-serif; font-size: 20}</style><script type="text/javascript">
 (function() {
 'use strict';
 
@@ -2006,7 +2006,7 @@ function endsWith(sub, str)
 function indexes(sub, str)
 {
 	var subLen = sub.length;
-	
+
 	if (subLen < 1)
 	{
 		return _elm_lang$core$Native_List.Nil;
@@ -2019,8 +2019,8 @@ function indexes(sub, str)
 	{
 		is.push(i);
 		i = i + subLen;
-	}	
-	
+	}
+
 	return _elm_lang$core$Native_List.fromArray(is);
 }
 
