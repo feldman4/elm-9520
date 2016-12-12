@@ -10813,6 +10813,29 @@ var _feldman4$elm_xb$ComponentTemplate$adjectives = {
 		}
 	}
 };
+var _feldman4$elm_xb$ComponentTemplate$decodeScores = function (json) {
+	var decoder = function (x) {
+		var _p0 = x;
+		if (_p0.ctor === 'Ok') {
+			return _p0._0;
+		} else {
+			var a = A2(_elm_lang$core$Debug$log, 'err', _p0._0);
+			return -1;
+		}
+	};
+	var choiceA = decoder(
+		A2(
+			_elm_lang$core$Json_Decode$decodeString,
+			A2(_elm_lang$core$Json_Decode$field, 'scoreA', _elm_lang$core$Json_Decode$float),
+			json));
+	var choiceB = decoder(
+		A2(
+			_elm_lang$core$Json_Decode$decodeString,
+			A2(_elm_lang$core$Json_Decode$field, 'scoreB', _elm_lang$core$Json_Decode$float),
+			json));
+	return {ctor: '_Tuple2', _0: choiceA, _1: choiceB};
+};
+var _feldman4$elm_xb$ComponentTemplate$webSocketPath = 'ws://elm-9520.herokuapp.com';
 var _feldman4$elm_xb$ComponentTemplate$requestScore = F3(
 	function (challenge, input, choices) {
 		var listString = function (x) {
@@ -10859,30 +10882,11 @@ var _feldman4$elm_xb$ComponentTemplate$requestScore = F3(
 					}
 				}));
 		var a = A2(_elm_lang$core$Debug$log, 'sent', request);
-		return A2(_elm_lang$websocket$WebSocket$send, 'ws://localhost:5000/score', request);
+		return A2(
+			_elm_lang$websocket$WebSocket$send,
+			A2(_elm_lang$core$Basics_ops['++'], _feldman4$elm_xb$ComponentTemplate$webSocketPath, '/score'),
+			request);
 	});
-var _feldman4$elm_xb$ComponentTemplate$decodeScores = function (json) {
-	var decoder = function (x) {
-		var _p0 = x;
-		if (_p0.ctor === 'Ok') {
-			return _p0._0;
-		} else {
-			var a = A2(_elm_lang$core$Debug$log, 'err', _p0._0);
-			return -1;
-		}
-	};
-	var choiceA = decoder(
-		A2(
-			_elm_lang$core$Json_Decode$decodeString,
-			A2(_elm_lang$core$Json_Decode$field, 'scoreA', _elm_lang$core$Json_Decode$float),
-			json));
-	var choiceB = decoder(
-		A2(
-			_elm_lang$core$Json_Decode$decodeString,
-			A2(_elm_lang$core$Json_Decode$field, 'scoreB', _elm_lang$core$Json_Decode$float),
-			json));
-	return {ctor: '_Tuple2', _0: choiceA, _1: choiceB};
-};
 var _feldman4$elm_xb$ComponentTemplate$argSort = function (input) {
 	return A2(
 		_elm_lang$core$List$map,
@@ -10979,7 +10983,10 @@ var _feldman4$elm_xb$ComponentTemplate$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$websocket$WebSocket$listen, 'ws://localhost:5000/score', _feldman4$elm_xb$ComponentTemplate$Score),
+			_0: A2(
+				_elm_lang$websocket$WebSocket$listen,
+				A2(_elm_lang$core$Basics_ops['++'], _feldman4$elm_xb$ComponentTemplate$webSocketPath, '/score'),
+				_feldman4$elm_xb$ComponentTemplate$Score),
 			_1: {ctor: '[]'}
 		});
 };
@@ -10998,15 +11005,7 @@ var _feldman4$elm_xb$ComponentTemplate$init = function () {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		{
-			challenge: {
-				ctor: '::',
-				_0: 'Rancid',
-				_1: {
-					ctor: '::',
-					_0: 'Felon',
-					_1: {ctor: '[]'}
-				}
-			},
+			challenge: {ctor: '[]'},
 			input: {ctor: '[]'},
 			choices: {
 				ctor: '_Tuple2',
@@ -11028,6 +11027,21 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 		var _p4 = msg;
 		switch (_p4.ctor) {
 			case 'Click':
+				var _p5 = _feldman4$elm_xb$ComponentTemplate$getAdjNoun(model);
+				var adj = _p5._0;
+				var nou = _p5._1;
+				var seed = _p5._2;
+				var newModel = _elm_lang$core$Native_Utils.eq(
+					A2(
+						_elm_lang$core$Basics_ops['%'],
+						_elm_lang$core$List$length(model.input),
+						2),
+					1) ? _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						choices: {ctor: '_Tuple2', _0: adj, _1: nou},
+						seed: seed
+					}) : model;
 				var newInput = A2(
 					_elm_lang$core$Basics_ops['++'],
 					model.input,
@@ -11036,7 +11050,7 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 						_0: _p4._0,
 						_1: {ctor: '[]'}
 					});
-				var _p5 = _elm_lang$core$Native_Utils.eq(
+				var _p6 = _elm_lang$core$Native_Utils.eq(
 					A2(
 						_elm_lang$core$Basics_ops['%'],
 						_elm_lang$core$List$length(model.input),
@@ -11049,12 +11063,12 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model.appState,
 					{ctor: '[]'});
-				var appState = _p5._0;
-				var newCmd = _p5._1;
+				var appState = _p6._0;
+				var newCmd = _p6._1;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
-						model,
+						newModel,
 						{input: newInput, appState: appState}),
 					{
 						ctor: '::',
@@ -11062,37 +11076,37 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'ToState':
-				var _p7 = _p4._0;
-				var _p6 = _p7;
-				if (_p6.ctor === 'Prompt') {
+				var _p8 = _p4._0;
+				var _p7 = _p8;
+				if (_p7.ctor === 'Prompt') {
 					return _elm_lang$core$Native_Utils.eq(
 						_elm_lang$core$List$length(model.input),
 						6) ? _feldman4$elm_xb$ComponentTemplate$init : A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{appState: _p7}),
+							{appState: _p8}),
 						{ctor: '[]'});
 				} else {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{appState: _p7}),
+							{appState: _p8}),
 						{ctor: '[]'});
 				}
 			case 'NewTime':
-				var _p8 = _feldman4$elm_xb$ComponentTemplate$initChallenge;
-				var gA = _p8._0;
-				var gB = _p8._1;
+				var _p9 = _feldman4$elm_xb$ComponentTemplate$initChallenge;
+				var gA = _p9._0;
+				var gB = _p9._1;
 				var seed0 = _mgold$elm_random_pcg$Random_Pcg$initialSeed(
 					_elm_lang$core$Basics$round(_p4._0));
-				var _p9 = A2(_mgold$elm_random_pcg$Random_Pcg$step, gA, seed0);
-				var wordA = _p9._0;
-				var seed2 = _p9._1;
-				var _p10 = A2(_mgold$elm_random_pcg$Random_Pcg$step, gB, seed2);
-				var wordB = _p10._0;
-				var seed3 = _p10._1;
+				var _p10 = A2(_mgold$elm_random_pcg$Random_Pcg$step, gA, seed0);
+				var wordA = _p10._0;
+				var seed2 = _p10._1;
+				var _p11 = A2(_mgold$elm_random_pcg$Random_Pcg$step, gB, seed2);
+				var wordB = _p11._0;
+				var seed3 = _p11._1;
 				var newModel = _elm_lang$core$Native_Utils.update(
 					model,
 					{
@@ -11107,10 +11121,10 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 							}
 						}
 					});
-				var _p11 = _feldman4$elm_xb$ComponentTemplate$getAdjNoun(newModel);
-				var adj = _p11._0;
-				var nou = _p11._1;
-				var finalSeed = _p11._2;
+				var _p12 = _feldman4$elm_xb$ComponentTemplate$getAdjNoun(newModel);
+				var adj = _p12._0;
+				var nou = _p12._1;
+				var finalSeed = _p12._2;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -11122,10 +11136,6 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 					{ctor: '[]'});
 			default:
 				var _p14 = _p4._0;
-				var _p12 = _feldman4$elm_xb$ComponentTemplate$getAdjNoun(model);
-				var adj = _p12._0;
-				var nou = _p12._1;
-				var seed = _p12._2;
 				var _p13 = _feldman4$elm_xb$ComponentTemplate$decodeScores(_p14);
 				var scoreA = _p13._0;
 				var scoreB = _p13._1;
@@ -11142,9 +11152,7 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: scoreA, _1: scoreB},
 									_1: {ctor: '[]'}
-								}),
-							choices: {ctor: '_Tuple2', _0: adj, _1: nou},
-							seed: seed
+								})
 						}),
 					{ctor: '[]'});
 		}
