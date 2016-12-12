@@ -7764,6 +7764,438 @@ var _elm_lang$html$Html$details = _elm_lang$html$Html$node('details');
 var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
+var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
+var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
+var _elm_lang$core$Task$spawnCmd = F2(
+	function (router, _p0) {
+		var _p1 = _p0;
+		return _elm_lang$core$Native_Scheduler.spawn(
+			A2(
+				_elm_lang$core$Task$andThen,
+				_elm_lang$core$Platform$sendToApp(router),
+				_p1._0));
+	});
+var _elm_lang$core$Task$fail = _elm_lang$core$Native_Scheduler.fail;
+var _elm_lang$core$Task$mapError = F2(
+	function (convert, task) {
+		return A2(
+			_elm_lang$core$Task$onError,
+			function (_p2) {
+				return _elm_lang$core$Task$fail(
+					convert(_p2));
+			},
+			task);
+	});
+var _elm_lang$core$Task$succeed = _elm_lang$core$Native_Scheduler.succeed;
+var _elm_lang$core$Task$map = F2(
+	function (func, taskA) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return _elm_lang$core$Task$succeed(
+					func(a));
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return _elm_lang$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map3 = F4(
+	function (func, taskA, taskB, taskC) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return _elm_lang$core$Task$succeed(
+									A3(func, a, b, c));
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map4 = F5(
+	function (func, taskA, taskB, taskC, taskD) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									function (d) {
+										return _elm_lang$core$Task$succeed(
+											A4(func, a, b, c, d));
+									},
+									taskD);
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map5 = F6(
+	function (func, taskA, taskB, taskC, taskD, taskE) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									function (d) {
+										return A2(
+											_elm_lang$core$Task$andThen,
+											function (e) {
+												return _elm_lang$core$Task$succeed(
+													A5(func, a, b, c, d, e));
+											},
+											taskE);
+									},
+									taskD);
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$sequence = function (tasks) {
+	var _p3 = tasks;
+	if (_p3.ctor === '[]') {
+		return _elm_lang$core$Task$succeed(
+			{ctor: '[]'});
+	} else {
+		return A3(
+			_elm_lang$core$Task$map2,
+			F2(
+				function (x, y) {
+					return {ctor: '::', _0: x, _1: y};
+				}),
+			_p3._0,
+			_elm_lang$core$Task$sequence(_p3._1));
+	}
+};
+var _elm_lang$core$Task$onEffects = F3(
+	function (router, commands, state) {
+		return A2(
+			_elm_lang$core$Task$map,
+			function (_p4) {
+				return {ctor: '_Tuple0'};
+			},
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					_elm_lang$core$Task$spawnCmd(router),
+					commands)));
+	});
+var _elm_lang$core$Task$init = _elm_lang$core$Task$succeed(
+	{ctor: '_Tuple0'});
+var _elm_lang$core$Task$onSelfMsg = F3(
+	function (_p7, _p6, _p5) {
+		return _elm_lang$core$Task$succeed(
+			{ctor: '_Tuple0'});
+	});
+var _elm_lang$core$Task$command = _elm_lang$core$Native_Platform.leaf('Task');
+var _elm_lang$core$Task$Perform = function (a) {
+	return {ctor: 'Perform', _0: a};
+};
+var _elm_lang$core$Task$perform = F2(
+	function (toMessage, task) {
+		return _elm_lang$core$Task$command(
+			_elm_lang$core$Task$Perform(
+				A2(_elm_lang$core$Task$map, toMessage, task)));
+	});
+var _elm_lang$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return _elm_lang$core$Task$command(
+			_elm_lang$core$Task$Perform(
+				A2(
+					_elm_lang$core$Task$onError,
+					function (_p8) {
+						return _elm_lang$core$Task$succeed(
+							resultToMessage(
+								_elm_lang$core$Result$Err(_p8)));
+					},
+					A2(
+						_elm_lang$core$Task$andThen,
+						function (_p9) {
+							return _elm_lang$core$Task$succeed(
+								resultToMessage(
+									_elm_lang$core$Result$Ok(_p9)));
+						},
+						task))));
+	});
+var _elm_lang$core$Task$cmdMap = F2(
+	function (tagger, _p10) {
+		var _p11 = _p10;
+		return _elm_lang$core$Task$Perform(
+			A2(_elm_lang$core$Task$map, tagger, _p11._0));
+	});
+_elm_lang$core$Native_Platform.effectManagers['Task'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Task$init, onEffects: _elm_lang$core$Task$onEffects, onSelfMsg: _elm_lang$core$Task$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Task$cmdMap};
+//import Native.Scheduler //
+
+var _elm_lang$core$Native_Time = function() {
+
+var now = _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+{
+	callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
+});
+
+function setInterval_(interval, task)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var id = setInterval(function() {
+			_elm_lang$core$Native_Scheduler.rawSpawn(task);
+		}, interval);
+
+		return function() { clearInterval(id); };
+	});
+}
+
+return {
+	now: now,
+	setInterval_: F2(setInterval_)
+};
+
+}();var _elm_lang$core$Time$setInterval = _elm_lang$core$Native_Time.setInterval_;
+var _elm_lang$core$Time$spawnHelp = F3(
+	function (router, intervals, processes) {
+		var _p0 = intervals;
+		if (_p0.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(processes);
+		} else {
+			var _p1 = _p0._0;
+			var spawnRest = function (id) {
+				return A3(
+					_elm_lang$core$Time$spawnHelp,
+					router,
+					_p0._1,
+					A3(_elm_lang$core$Dict$insert, _p1, id, processes));
+			};
+			var spawnTimer = _elm_lang$core$Native_Scheduler.spawn(
+				A2(
+					_elm_lang$core$Time$setInterval,
+					_p1,
+					A2(_elm_lang$core$Platform$sendToSelf, router, _p1)));
+			return A2(_elm_lang$core$Task$andThen, spawnRest, spawnTimer);
+		}
+	});
+var _elm_lang$core$Time$addMySub = F2(
+	function (_p2, state) {
+		var _p3 = _p2;
+		var _p6 = _p3._1;
+		var _p5 = _p3._0;
+		var _p4 = A2(_elm_lang$core$Dict$get, _p5, state);
+		if (_p4.ctor === 'Nothing') {
+			return A3(
+				_elm_lang$core$Dict$insert,
+				_p5,
+				{
+					ctor: '::',
+					_0: _p6,
+					_1: {ctor: '[]'}
+				},
+				state);
+		} else {
+			return A3(
+				_elm_lang$core$Dict$insert,
+				_p5,
+				{ctor: '::', _0: _p6, _1: _p4._0},
+				state);
+		}
+	});
+var _elm_lang$core$Time$inMilliseconds = function (t) {
+	return t;
+};
+var _elm_lang$core$Time$millisecond = 1;
+var _elm_lang$core$Time$second = 1000 * _elm_lang$core$Time$millisecond;
+var _elm_lang$core$Time$minute = 60 * _elm_lang$core$Time$second;
+var _elm_lang$core$Time$hour = 60 * _elm_lang$core$Time$minute;
+var _elm_lang$core$Time$inHours = function (t) {
+	return t / _elm_lang$core$Time$hour;
+};
+var _elm_lang$core$Time$inMinutes = function (t) {
+	return t / _elm_lang$core$Time$minute;
+};
+var _elm_lang$core$Time$inSeconds = function (t) {
+	return t / _elm_lang$core$Time$second;
+};
+var _elm_lang$core$Time$now = _elm_lang$core$Native_Time.now;
+var _elm_lang$core$Time$onSelfMsg = F3(
+	function (router, interval, state) {
+		var _p7 = A2(_elm_lang$core$Dict$get, interval, state.taggers);
+		if (_p7.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var tellTaggers = function (time) {
+				return _elm_lang$core$Task$sequence(
+					A2(
+						_elm_lang$core$List$map,
+						function (tagger) {
+							return A2(
+								_elm_lang$core$Platform$sendToApp,
+								router,
+								tagger(time));
+						},
+						_p7._0));
+			};
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (_p8) {
+					return _elm_lang$core$Task$succeed(state);
+				},
+				A2(_elm_lang$core$Task$andThen, tellTaggers, _elm_lang$core$Time$now));
+		}
+	});
+var _elm_lang$core$Time$subscription = _elm_lang$core$Native_Platform.leaf('Time');
+var _elm_lang$core$Time$State = F2(
+	function (a, b) {
+		return {taggers: a, processes: b};
+	});
+var _elm_lang$core$Time$init = _elm_lang$core$Task$succeed(
+	A2(_elm_lang$core$Time$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _elm_lang$core$Time$onEffects = F3(
+	function (router, subs, _p9) {
+		var _p10 = _p9;
+		var rightStep = F3(
+			function (_p12, id, _p11) {
+				var _p13 = _p11;
+				return {
+					ctor: '_Tuple3',
+					_0: _p13._0,
+					_1: _p13._1,
+					_2: A2(
+						_elm_lang$core$Task$andThen,
+						function (_p14) {
+							return _p13._2;
+						},
+						_elm_lang$core$Native_Scheduler.kill(id))
+				};
+			});
+		var bothStep = F4(
+			function (interval, taggers, id, _p15) {
+				var _p16 = _p15;
+				return {
+					ctor: '_Tuple3',
+					_0: _p16._0,
+					_1: A3(_elm_lang$core$Dict$insert, interval, id, _p16._1),
+					_2: _p16._2
+				};
+			});
+		var leftStep = F3(
+			function (interval, taggers, _p17) {
+				var _p18 = _p17;
+				return {
+					ctor: '_Tuple3',
+					_0: {ctor: '::', _0: interval, _1: _p18._0},
+					_1: _p18._1,
+					_2: _p18._2
+				};
+			});
+		var newTaggers = A3(_elm_lang$core$List$foldl, _elm_lang$core$Time$addMySub, _elm_lang$core$Dict$empty, subs);
+		var _p19 = A6(
+			_elm_lang$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			newTaggers,
+			_p10.processes,
+			{
+				ctor: '_Tuple3',
+				_0: {ctor: '[]'},
+				_1: _elm_lang$core$Dict$empty,
+				_2: _elm_lang$core$Task$succeed(
+					{ctor: '_Tuple0'})
+			});
+		var spawnList = _p19._0;
+		var existingDict = _p19._1;
+		var killTask = _p19._2;
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (newProcesses) {
+				return _elm_lang$core$Task$succeed(
+					A2(_elm_lang$core$Time$State, newTaggers, newProcesses));
+			},
+			A2(
+				_elm_lang$core$Task$andThen,
+				function (_p20) {
+					return A3(_elm_lang$core$Time$spawnHelp, router, spawnList, existingDict);
+				},
+				killTask));
+	});
+var _elm_lang$core$Time$Every = F2(
+	function (a, b) {
+		return {ctor: 'Every', _0: a, _1: b};
+	});
+var _elm_lang$core$Time$every = F2(
+	function (interval, tagger) {
+		return _elm_lang$core$Time$subscription(
+			A2(_elm_lang$core$Time$Every, interval, tagger));
+	});
+var _elm_lang$core$Time$subMap = F2(
+	function (f, _p21) {
+		var _p22 = _p21;
+		return A2(
+			_elm_lang$core$Time$Every,
+			_p22._0,
+			function (_p23) {
+				return f(
+					_p22._1(_p23));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+var _elm_lang$core$Native_Bitwise = function() {
+
+return {
+	and: F2(function and(a, b) { return a & b; }),
+	or: F2(function or(a, b) { return a | b; }),
+	xor: F2(function xor(a, b) { return a ^ b; }),
+	complement: function complement(a) { return ~a; },
+	shiftLeftBy: F2(function(offset, a) { return a << offset; }),
+	shiftRightBy: F2(function(offset, a) { return a >> offset; }),
+	shiftRightZfBy: F2(function(offset, a) { return a >>> offset; })
+};
+
+}();
+var _elm_lang$core$Bitwise$shiftRightZfBy = _elm_lang$core$Native_Bitwise.shiftRightZfBy;
+var _elm_lang$core$Bitwise$shiftRightBy = _elm_lang$core$Native_Bitwise.shiftRightBy;
+var _elm_lang$core$Bitwise$shiftLeftBy = _elm_lang$core$Native_Bitwise.shiftLeftBy;
+var _elm_lang$core$Bitwise$complement = _elm_lang$core$Native_Bitwise.complement;
+var _elm_lang$core$Bitwise$xor = _elm_lang$core$Native_Bitwise.xor;
+var _elm_lang$core$Bitwise$or = _elm_lang$core$Native_Bitwise.or;
+var _elm_lang$core$Bitwise$and = _elm_lang$core$Native_Bitwise.and;
 var _elm_lang$html$Html_Attributes$map = _elm_lang$virtual_dom$VirtualDom$mapProperty;
 var _elm_lang$html$Html_Attributes$attribute = _elm_lang$virtual_dom$VirtualDom$attribute;
 var _elm_lang$html$Html_Attributes$contextmenu = function (value) {
@@ -8227,125 +8659,2502 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
-var _feldman4$elm_xb$ComponentTemplate$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{ctor: '[]'});
+var _elm_lang$websocket$Native_WebSocket = function() {
+
+function open(url, settings)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		try
+		{
+			var socket = new WebSocket(url);
+			socket.elm_web_socket = true;
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({
+				ctor: err.name === 'SecurityError' ? 'BadSecurity' : 'BadArgs',
+				_0: err.message
+			}));
+		}
+
+		socket.addEventListener("open", function(event) {
+			callback(_elm_lang$core$Native_Scheduler.succeed(socket));
+		});
+
+		socket.addEventListener("message", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(A2(settings.onMessage, socket, event.data));
+		});
+
+		socket.addEventListener("close", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(settings.onClose({
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean
+			}));
+		});
+
+		return function()
+		{
+			if (socket && socket.close)
+			{
+				socket.close();
+			}
+		};
+	});
+}
+
+function send(socket, string)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var result =
+			socket.readyState === WebSocket.OPEN
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just({ ctor: 'NotOpen' });
+
+		try
+		{
+			socket.send(string);
+		}
+		catch(err)
+		{
+			result = _elm_lang$core$Maybe$Just({ ctor: 'BadString' });
+		}
+
+		callback(_elm_lang$core$Native_Scheduler.succeed(result));
+	});
+}
+
+function close(code, reason, socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		try
+		{
+			socket.close(code, reason);
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail(_elm_lang$core$Maybe$Just({
+				ctor: err.name === 'SyntaxError' ? 'BadReason' : 'BadCode'
+			})));
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Maybe$Nothing));
+	});
+}
+
+function bytesQueued(socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		callback(_elm_lang$core$Native_Scheduler.succeed(socket.bufferedAmount));
+	});
+}
+
+return {
+	open: F2(open),
+	send: F2(send),
+	close: F3(close),
+	bytesQueued: bytesQueued
 };
-var _feldman4$elm_xb$ComponentTemplate$Model = F5(
-	function (a, b, c, d, e) {
-		return {challenge: a, input: b, score: c, choices: d, appState: e};
+
+}();
+var _elm_lang$websocket$WebSocket_LowLevel$bytesQueued = _elm_lang$websocket$Native_WebSocket.bytesQueued;
+var _elm_lang$websocket$WebSocket_LowLevel$send = _elm_lang$websocket$Native_WebSocket.send;
+var _elm_lang$websocket$WebSocket_LowLevel$closeWith = _elm_lang$websocket$Native_WebSocket.close;
+var _elm_lang$websocket$WebSocket_LowLevel$close = function (socket) {
+	return A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$core$Basics$always(
+			{ctor: '_Tuple0'}),
+		A3(_elm_lang$websocket$WebSocket_LowLevel$closeWith, 1000, '', socket));
+};
+var _elm_lang$websocket$WebSocket_LowLevel$open = _elm_lang$websocket$Native_WebSocket.open;
+var _elm_lang$websocket$WebSocket_LowLevel$Settings = F2(
+	function (a, b) {
+		return {onMessage: a, onClose: b};
+	});
+var _elm_lang$websocket$WebSocket_LowLevel$WebSocket = {ctor: 'WebSocket'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadArgs = {ctor: 'BadArgs'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadSecurity = {ctor: 'BadSecurity'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadReason = {ctor: 'BadReason'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadCode = {ctor: 'BadCode'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadString = {ctor: 'BadString'};
+var _elm_lang$websocket$WebSocket_LowLevel$NotOpen = {ctor: 'NotOpen'};
+var _elm_lang$websocket$WebSocket$closeConnection = function (connection) {
+	var _p0 = connection;
+	if (_p0.ctor === 'Opening') {
+		return _elm_lang$core$Process$kill(_p0._1);
+	} else {
+		return _elm_lang$websocket$WebSocket_LowLevel$close(_p0._0);
+	}
+};
+var _elm_lang$websocket$WebSocket$after = function (backoff) {
+	return (_elm_lang$core$Native_Utils.cmp(backoff, 1) < 0) ? _elm_lang$core$Task$succeed(
+		{ctor: '_Tuple0'}) : _elm_lang$core$Process$sleep(
+		_elm_lang$core$Basics$toFloat(
+			10 * Math.pow(2, backoff)));
+};
+var _elm_lang$websocket$WebSocket$removeQueue = F2(
+	function (name, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				queues: A2(_elm_lang$core$Dict$remove, name, state.queues)
+			});
+	});
+var _elm_lang$websocket$WebSocket$updateSocket = F3(
+	function (name, connection, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				sockets: A3(_elm_lang$core$Dict$insert, name, connection, state.sockets)
+			});
+	});
+var _elm_lang$websocket$WebSocket$add = F2(
+	function (value, maybeList) {
+		var _p1 = maybeList;
+		if (_p1.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: value,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '::', _0: value, _1: _p1._0});
+		}
+	});
+var _elm_lang$websocket$WebSocket$buildSubDict = F2(
+	function (subs, dict) {
+		buildSubDict:
+		while (true) {
+			var _p2 = subs;
+			if (_p2.ctor === '[]') {
+				return dict;
+			} else {
+				if (_p2._0.ctor === 'Listen') {
+					var _v3 = _p2._1,
+						_v4 = A3(
+						_elm_lang$core$Dict$update,
+						_p2._0._0,
+						_elm_lang$websocket$WebSocket$add(_p2._0._1),
+						dict);
+					subs = _v3;
+					dict = _v4;
+					continue buildSubDict;
+				} else {
+					var _v5 = _p2._1,
+						_v6 = A3(
+						_elm_lang$core$Dict$update,
+						_p2._0._0,
+						function (_p3) {
+							return _elm_lang$core$Maybe$Just(
+								A2(
+									_elm_lang$core$Maybe$withDefault,
+									{ctor: '[]'},
+									_p3));
+						},
+						dict);
+					subs = _v5;
+					dict = _v6;
+					continue buildSubDict;
+				}
+			}
+		}
+	});
+var _elm_lang$websocket$WebSocket_ops = _elm_lang$websocket$WebSocket_ops || {};
+_elm_lang$websocket$WebSocket_ops['&>'] = F2(
+	function (t1, t2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p4) {
+				return t2;
+			},
+			t1);
+	});
+var _elm_lang$websocket$WebSocket$sendMessagesHelp = F3(
+	function (cmds, socketsDict, queuesDict) {
+		sendMessagesHelp:
+		while (true) {
+			var _p5 = cmds;
+			if (_p5.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(queuesDict);
+			} else {
+				var _p9 = _p5._1;
+				var _p8 = _p5._0._0;
+				var _p7 = _p5._0._1;
+				var _p6 = A2(_elm_lang$core$Dict$get, _p8, socketsDict);
+				if ((_p6.ctor === 'Just') && (_p6._0.ctor === 'Connected')) {
+					return A2(
+						_elm_lang$websocket$WebSocket_ops['&>'],
+						A2(_elm_lang$websocket$WebSocket_LowLevel$send, _p6._0._0, _p7),
+						A3(_elm_lang$websocket$WebSocket$sendMessagesHelp, _p9, socketsDict, queuesDict));
+				} else {
+					var _v9 = _p9,
+						_v10 = socketsDict,
+						_v11 = A3(
+						_elm_lang$core$Dict$update,
+						_p8,
+						_elm_lang$websocket$WebSocket$add(_p7),
+						queuesDict);
+					cmds = _v9;
+					socketsDict = _v10;
+					queuesDict = _v11;
+					continue sendMessagesHelp;
+				}
+			}
+		}
+	});
+var _elm_lang$websocket$WebSocket$subscription = _elm_lang$core$Native_Platform.leaf('WebSocket');
+var _elm_lang$websocket$WebSocket$command = _elm_lang$core$Native_Platform.leaf('WebSocket');
+var _elm_lang$websocket$WebSocket$State = F3(
+	function (a, b, c) {
+		return {sockets: a, queues: b, subs: c};
+	});
+var _elm_lang$websocket$WebSocket$init = _elm_lang$core$Task$succeed(
+	A3(_elm_lang$websocket$WebSocket$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _elm_lang$websocket$WebSocket$Send = F2(
+	function (a, b) {
+		return {ctor: 'Send', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$send = F2(
+	function (url, message) {
+		return _elm_lang$websocket$WebSocket$command(
+			A2(_elm_lang$websocket$WebSocket$Send, url, message));
+	});
+var _elm_lang$websocket$WebSocket$cmdMap = F2(
+	function (_p11, _p10) {
+		var _p12 = _p10;
+		return A2(_elm_lang$websocket$WebSocket$Send, _p12._0, _p12._1);
+	});
+var _elm_lang$websocket$WebSocket$KeepAlive = function (a) {
+	return {ctor: 'KeepAlive', _0: a};
+};
+var _elm_lang$websocket$WebSocket$keepAlive = function (url) {
+	return _elm_lang$websocket$WebSocket$subscription(
+		_elm_lang$websocket$WebSocket$KeepAlive(url));
+};
+var _elm_lang$websocket$WebSocket$Listen = F2(
+	function (a, b) {
+		return {ctor: 'Listen', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$listen = F2(
+	function (url, tagger) {
+		return _elm_lang$websocket$WebSocket$subscription(
+			A2(_elm_lang$websocket$WebSocket$Listen, url, tagger));
+	});
+var _elm_lang$websocket$WebSocket$subMap = F2(
+	function (func, sub) {
+		var _p13 = sub;
+		if (_p13.ctor === 'Listen') {
+			return A2(
+				_elm_lang$websocket$WebSocket$Listen,
+				_p13._0,
+				function (_p14) {
+					return func(
+						_p13._1(_p14));
+				});
+		} else {
+			return _elm_lang$websocket$WebSocket$KeepAlive(_p13._0);
+		}
+	});
+var _elm_lang$websocket$WebSocket$Connected = function (a) {
+	return {ctor: 'Connected', _0: a};
+};
+var _elm_lang$websocket$WebSocket$Opening = F2(
+	function (a, b) {
+		return {ctor: 'Opening', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$BadOpen = function (a) {
+	return {ctor: 'BadOpen', _0: a};
+};
+var _elm_lang$websocket$WebSocket$GoodOpen = F2(
+	function (a, b) {
+		return {ctor: 'GoodOpen', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$Die = function (a) {
+	return {ctor: 'Die', _0: a};
+};
+var _elm_lang$websocket$WebSocket$Receive = F2(
+	function (a, b) {
+		return {ctor: 'Receive', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$open = F2(
+	function (name, router) {
+		return A2(
+			_elm_lang$websocket$WebSocket_LowLevel$open,
+			name,
+			{
+				onMessage: F2(
+					function (_p15, msg) {
+						return A2(
+							_elm_lang$core$Platform$sendToSelf,
+							router,
+							A2(_elm_lang$websocket$WebSocket$Receive, name, msg));
+					}),
+				onClose: function (details) {
+					return A2(
+						_elm_lang$core$Platform$sendToSelf,
+						router,
+						_elm_lang$websocket$WebSocket$Die(name));
+				}
+			});
+	});
+var _elm_lang$websocket$WebSocket$attemptOpen = F3(
+	function (router, backoff, name) {
+		var badOpen = function (_p16) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				_elm_lang$websocket$WebSocket$BadOpen(name));
+		};
+		var goodOpen = function (ws) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_elm_lang$websocket$WebSocket$GoodOpen, name, ws));
+		};
+		var actuallyAttemptOpen = A2(
+			_elm_lang$core$Task$onError,
+			badOpen,
+			A2(
+				_elm_lang$core$Task$andThen,
+				goodOpen,
+				A2(_elm_lang$websocket$WebSocket$open, name, router)));
+		return _elm_lang$core$Process$spawn(
+			A2(
+				_elm_lang$websocket$WebSocket_ops['&>'],
+				_elm_lang$websocket$WebSocket$after(backoff),
+				actuallyAttemptOpen));
+	});
+var _elm_lang$websocket$WebSocket$onEffects = F4(
+	function (router, cmds, subs, state) {
+		var newSubs = A2(_elm_lang$websocket$WebSocket$buildSubDict, subs, _elm_lang$core$Dict$empty);
+		var cleanup = function (newQueues) {
+			var rightStep = F3(
+				function (name, connection, getNewSockets) {
+					return A2(
+						_elm_lang$websocket$WebSocket_ops['&>'],
+						_elm_lang$websocket$WebSocket$closeConnection(connection),
+						getNewSockets);
+				});
+			var bothStep = F4(
+				function (name, _p17, connection, getNewSockets) {
+					return A2(
+						_elm_lang$core$Task$map,
+						A2(_elm_lang$core$Dict$insert, name, connection),
+						getNewSockets);
+				});
+			var leftStep = F3(
+				function (name, _p18, getNewSockets) {
+					return A2(
+						_elm_lang$core$Task$andThen,
+						function (newSockets) {
+							return A2(
+								_elm_lang$core$Task$andThen,
+								function (pid) {
+									return _elm_lang$core$Task$succeed(
+										A3(
+											_elm_lang$core$Dict$insert,
+											name,
+											A2(_elm_lang$websocket$WebSocket$Opening, 0, pid),
+											newSockets));
+								},
+								A3(_elm_lang$websocket$WebSocket$attemptOpen, router, 0, name));
+						},
+						getNewSockets);
+				});
+			var newEntries = A2(
+				_elm_lang$core$Dict$union,
+				newQueues,
+				A2(
+					_elm_lang$core$Dict$map,
+					F2(
+						function (k, v) {
+							return {ctor: '[]'};
+						}),
+					newSubs));
+			var collectNewSockets = A6(
+				_elm_lang$core$Dict$merge,
+				leftStep,
+				bothStep,
+				rightStep,
+				newEntries,
+				state.sockets,
+				_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (newSockets) {
+					return _elm_lang$core$Task$succeed(
+						A3(_elm_lang$websocket$WebSocket$State, newSockets, newQueues, newSubs));
+				},
+				collectNewSockets);
+		};
+		var sendMessagesGetNewQueues = A3(_elm_lang$websocket$WebSocket$sendMessagesHelp, cmds, state.sockets, state.queues);
+		return A2(_elm_lang$core$Task$andThen, cleanup, sendMessagesGetNewQueues);
+	});
+var _elm_lang$websocket$WebSocket$onSelfMsg = F3(
+	function (router, selfMsg, state) {
+		var _p19 = selfMsg;
+		switch (_p19.ctor) {
+			case 'Receive':
+				var sends = A2(
+					_elm_lang$core$List$map,
+					function (tagger) {
+						return A2(
+							_elm_lang$core$Platform$sendToApp,
+							router,
+							tagger(_p19._1));
+					},
+					A2(
+						_elm_lang$core$Maybe$withDefault,
+						{ctor: '[]'},
+						A2(_elm_lang$core$Dict$get, _p19._0, state.subs)));
+				return A2(
+					_elm_lang$websocket$WebSocket_ops['&>'],
+					_elm_lang$core$Task$sequence(sends),
+					_elm_lang$core$Task$succeed(state));
+			case 'Die':
+				var _p21 = _p19._0;
+				var _p20 = A2(_elm_lang$core$Dict$get, _p21, state.sockets);
+				if (_p20.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					return A2(
+						_elm_lang$core$Task$andThen,
+						function (pid) {
+							return _elm_lang$core$Task$succeed(
+								A3(
+									_elm_lang$websocket$WebSocket$updateSocket,
+									_p21,
+									A2(_elm_lang$websocket$WebSocket$Opening, 0, pid),
+									state));
+						},
+						A3(_elm_lang$websocket$WebSocket$attemptOpen, router, 0, _p21));
+				}
+			case 'GoodOpen':
+				var _p24 = _p19._1;
+				var _p23 = _p19._0;
+				var _p22 = A2(_elm_lang$core$Dict$get, _p23, state.queues);
+				if (_p22.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(
+						A3(
+							_elm_lang$websocket$WebSocket$updateSocket,
+							_p23,
+							_elm_lang$websocket$WebSocket$Connected(_p24),
+							state));
+				} else {
+					return A3(
+						_elm_lang$core$List$foldl,
+						F2(
+							function (msg, task) {
+								return A2(
+									_elm_lang$websocket$WebSocket_ops['&>'],
+									A2(_elm_lang$websocket$WebSocket_LowLevel$send, _p24, msg),
+									task);
+							}),
+						_elm_lang$core$Task$succeed(
+							A2(
+								_elm_lang$websocket$WebSocket$removeQueue,
+								_p23,
+								A3(
+									_elm_lang$websocket$WebSocket$updateSocket,
+									_p23,
+									_elm_lang$websocket$WebSocket$Connected(_p24),
+									state))),
+						_p22._0);
+				}
+			default:
+				var _p27 = _p19._0;
+				var _p25 = A2(_elm_lang$core$Dict$get, _p27, state.sockets);
+				if (_p25.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					if (_p25._0.ctor === 'Opening') {
+						var _p26 = _p25._0._0;
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$websocket$WebSocket$updateSocket,
+										_p27,
+										A2(_elm_lang$websocket$WebSocket$Opening, _p26 + 1, pid),
+										state));
+							},
+							A3(_elm_lang$websocket$WebSocket$attemptOpen, router, _p26 + 1, _p27));
+					} else {
+						return _elm_lang$core$Task$succeed(state);
+					}
+				}
+		}
+	});
+_elm_lang$core$Native_Platform.effectManagers['WebSocket'] = {pkg: 'elm-lang/websocket', init: _elm_lang$websocket$WebSocket$init, onEffects: _elm_lang$websocket$WebSocket$onEffects, onSelfMsg: _elm_lang$websocket$WebSocket$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$websocket$WebSocket$cmdMap, subMap: _elm_lang$websocket$WebSocket$subMap};
+var _mgold$elm_random_pcg$Random_Pcg$toJson = function (_p0) {
+	var _p1 = _p0;
+	return _elm_lang$core$Json_Encode$list(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Encode$int(_p1._0),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Json_Encode$int(_p1._1),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _mgold$elm_random_pcg$Random_Pcg$mul32 = F2(
+	function (a, b) {
+		var bl = b & 65535;
+		var bh = 65535 & (b >>> 16);
+		var al = a & 65535;
+		var ah = 65535 & (a >>> 16);
+		return 0 | ((al * bl) + ((((ah * bl) + (al * bh)) << 16) >>> 0));
+	});
+var _mgold$elm_random_pcg$Random_Pcg$listHelp = F4(
+	function (list, n, generate, seed) {
+		listHelp:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.cmp(n, 1) < 0) {
+				return {ctor: '_Tuple2', _0: list, _1: seed};
+			} else {
+				var _p2 = generate(seed);
+				var value = _p2._0;
+				var newSeed = _p2._1;
+				var _v1 = {ctor: '::', _0: value, _1: list},
+					_v2 = n - 1,
+					_v3 = generate,
+					_v4 = newSeed;
+				list = _v1;
+				n = _v2;
+				generate = _v3;
+				seed = _v4;
+				continue listHelp;
+			}
+		}
+	});
+var _mgold$elm_random_pcg$Random_Pcg$minInt = -2147483648;
+var _mgold$elm_random_pcg$Random_Pcg$maxInt = 2147483647;
+var _mgold$elm_random_pcg$Random_Pcg$bit27 = 1.34217728e8;
+var _mgold$elm_random_pcg$Random_Pcg$bit53 = 9.007199254740992e15;
+var _mgold$elm_random_pcg$Random_Pcg$peel = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4._0;
+	var word = (_p5 ^ (_p5 >>> ((_p5 >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var _mgold$elm_random_pcg$Random_Pcg$step = F2(
+	function (_p6, seed) {
+		var _p7 = _p6;
+		return _p7._0(seed);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$retry = F3(
+	function (generator, predicate, seed) {
+		retry:
+		while (true) {
+			var _p8 = A2(_mgold$elm_random_pcg$Random_Pcg$step, generator, seed);
+			var candidate = _p8._0;
+			var newSeed = _p8._1;
+			if (predicate(candidate)) {
+				return {ctor: '_Tuple2', _0: candidate, _1: newSeed};
+			} else {
+				var _v7 = generator,
+					_v8 = predicate,
+					_v9 = newSeed;
+				generator = _v7;
+				predicate = _v8;
+				seed = _v9;
+				continue retry;
+			}
+		}
+	});
+var _mgold$elm_random_pcg$Random_Pcg$Generator = function (a) {
+	return {ctor: 'Generator', _0: a};
+};
+var _mgold$elm_random_pcg$Random_Pcg$list = F2(
+	function (n, _p9) {
+		var _p10 = _p9;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed) {
+				return A4(
+					_mgold$elm_random_pcg$Random_Pcg$listHelp,
+					{ctor: '[]'},
+					n,
+					_p10._0,
+					seed);
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$constant = function (value) {
+	return _mgold$elm_random_pcg$Random_Pcg$Generator(
+		function (seed) {
+			return {ctor: '_Tuple2', _0: value, _1: seed};
+		});
+};
+var _mgold$elm_random_pcg$Random_Pcg$map = F2(
+	function (func, _p11) {
+		var _p12 = _p11;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p13 = _p12._0(seed0);
+				var a = _p13._0;
+				var seed1 = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: func(a),
+					_1: seed1
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$map2 = F3(
+	function (func, _p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p18 = _p16._0(seed0);
+				var a = _p18._0;
+				var seed1 = _p18._1;
+				var _p19 = _p17._0(seed1);
+				var b = _p19._0;
+				var seed2 = _p19._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(func, a, b),
+					_1: seed2
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$pair = F2(
+	function (genA, genB) {
+		return A3(
+			_mgold$elm_random_pcg$Random_Pcg$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			genA,
+			genB);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$andMap = _mgold$elm_random_pcg$Random_Pcg$map2(
+	F2(
+		function (x, y) {
+			return x(y);
+		}));
+var _mgold$elm_random_pcg$Random_Pcg$map3 = F4(
+	function (func, _p22, _p21, _p20) {
+		var _p23 = _p22;
+		var _p24 = _p21;
+		var _p25 = _p20;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p26 = _p23._0(seed0);
+				var a = _p26._0;
+				var seed1 = _p26._1;
+				var _p27 = _p24._0(seed1);
+				var b = _p27._0;
+				var seed2 = _p27._1;
+				var _p28 = _p25._0(seed2);
+				var c = _p28._0;
+				var seed3 = _p28._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A3(func, a, b, c),
+					_1: seed3
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$map4 = F5(
+	function (func, _p32, _p31, _p30, _p29) {
+		var _p33 = _p32;
+		var _p34 = _p31;
+		var _p35 = _p30;
+		var _p36 = _p29;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p37 = _p33._0(seed0);
+				var a = _p37._0;
+				var seed1 = _p37._1;
+				var _p38 = _p34._0(seed1);
+				var b = _p38._0;
+				var seed2 = _p38._1;
+				var _p39 = _p35._0(seed2);
+				var c = _p39._0;
+				var seed3 = _p39._1;
+				var _p40 = _p36._0(seed3);
+				var d = _p40._0;
+				var seed4 = _p40._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A4(func, a, b, c, d),
+					_1: seed4
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$map5 = F6(
+	function (func, _p45, _p44, _p43, _p42, _p41) {
+		var _p46 = _p45;
+		var _p47 = _p44;
+		var _p48 = _p43;
+		var _p49 = _p42;
+		var _p50 = _p41;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p51 = _p46._0(seed0);
+				var a = _p51._0;
+				var seed1 = _p51._1;
+				var _p52 = _p47._0(seed1);
+				var b = _p52._0;
+				var seed2 = _p52._1;
+				var _p53 = _p48._0(seed2);
+				var c = _p53._0;
+				var seed3 = _p53._1;
+				var _p54 = _p49._0(seed3);
+				var d = _p54._0;
+				var seed4 = _p54._1;
+				var _p55 = _p50._0(seed4);
+				var e = _p55._0;
+				var seed5 = _p55._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A5(func, a, b, c, d, e),
+					_1: seed5
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$andThen = F2(
+	function (callback, _p56) {
+		var _p57 = _p56;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed) {
+				var _p58 = _p57._0(seed);
+				var result = _p58._0;
+				var newSeed = _p58._1;
+				var _p59 = callback(result);
+				var generateB = _p59._0;
+				return generateB(newSeed);
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$maybe = F2(
+	function (genBool, genA) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$andThen,
+			function (b) {
+				return b ? A2(_mgold$elm_random_pcg$Random_Pcg$map, _elm_lang$core$Maybe$Just, genA) : _mgold$elm_random_pcg$Random_Pcg$constant(_elm_lang$core$Maybe$Nothing);
+			},
+			genBool);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$filter = F2(
+	function (predicate, generator) {
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			A2(_mgold$elm_random_pcg$Random_Pcg$retry, generator, predicate));
+	});
+var _mgold$elm_random_pcg$Random_Pcg$Seed = F2(
+	function (a, b) {
+		return {ctor: 'Seed', _0: a, _1: b};
+	});
+var _mgold$elm_random_pcg$Random_Pcg$next = function (_p60) {
+	var _p61 = _p60;
+	var _p62 = _p61._1;
+	return A2(_mgold$elm_random_pcg$Random_Pcg$Seed, ((_p61._0 * 1664525) + _p62) >>> 0, _p62);
+};
+var _mgold$elm_random_pcg$Random_Pcg$initialSeed = function (x) {
+	var _p63 = _mgold$elm_random_pcg$Random_Pcg$next(
+		A2(_mgold$elm_random_pcg$Random_Pcg$Seed, 0, 1013904223));
+	var state1 = _p63._0;
+	var incr = _p63._1;
+	var state2 = (state1 + x) >>> 0;
+	return _mgold$elm_random_pcg$Random_Pcg$next(
+		A2(_mgold$elm_random_pcg$Random_Pcg$Seed, state2, incr));
+};
+var _mgold$elm_random_pcg$Random_Pcg$generate = F2(
+	function (toMsg, generator) {
+		return A2(
+			_elm_lang$core$Task$perform,
+			toMsg,
+			A2(
+				_elm_lang$core$Task$map,
+				function (_p64) {
+					return _elm_lang$core$Tuple$first(
+						A2(
+							_mgold$elm_random_pcg$Random_Pcg$step,
+							generator,
+							_mgold$elm_random_pcg$Random_Pcg$initialSeed(
+								_elm_lang$core$Basics$round(_p64))));
+				},
+				_elm_lang$core$Time$now));
+	});
+var _mgold$elm_random_pcg$Random_Pcg$int = F2(
+	function (a, b) {
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p65 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p65._0;
+				var hi = _p65._1;
+				var range = (hi - lo) + 1;
+				if (_elm_lang$core$Native_Utils.eq((range - 1) & range, 0)) {
+					return {
+						ctor: '_Tuple2',
+						_0: (((range - 1) & _mgold$elm_random_pcg$Random_Pcg$peel(seed0)) >>> 0) + lo,
+						_1: _mgold$elm_random_pcg$Random_Pcg$next(seed0)
+					};
+				} else {
+					var threshhold = A2(_elm_lang$core$Basics$rem, (0 - range) >>> 0, range) >>> 0;
+					var accountForBias = function (seed) {
+						accountForBias:
+						while (true) {
+							var seedN = _mgold$elm_random_pcg$Random_Pcg$next(seed);
+							var x = _mgold$elm_random_pcg$Random_Pcg$peel(seed);
+							if (_elm_lang$core$Native_Utils.cmp(x, threshhold) < 0) {
+								var _v28 = seedN;
+								seed = _v28;
+								continue accountForBias;
+							} else {
+								return {
+									ctor: '_Tuple2',
+									_0: A2(_elm_lang$core$Basics$rem, x, range) + lo,
+									_1: seedN
+								};
+							}
+						}
+					};
+					return accountForBias(seed0);
+				}
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$bool = A2(
+	_mgold$elm_random_pcg$Random_Pcg$map,
+	F2(
+		function (x, y) {
+			return _elm_lang$core$Native_Utils.eq(x, y);
+		})(1),
+	A2(_mgold$elm_random_pcg$Random_Pcg$int, 0, 1));
+var _mgold$elm_random_pcg$Random_Pcg$choice = F2(
+	function (x, y) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$map,
+			function (b) {
+				return b ? x : y;
+			},
+			_mgold$elm_random_pcg$Random_Pcg$bool);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$oneIn = function (n) {
+	return A2(
+		_mgold$elm_random_pcg$Random_Pcg$map,
+		F2(
+			function (x, y) {
+				return _elm_lang$core$Native_Utils.eq(x, y);
+			})(1),
+		A2(_mgold$elm_random_pcg$Random_Pcg$int, 1, n));
+};
+var _mgold$elm_random_pcg$Random_Pcg$sample = function () {
+	var find = F2(
+		function (k, ys) {
+			find:
+			while (true) {
+				var _p66 = ys;
+				if (_p66.ctor === '[]') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					if (_elm_lang$core$Native_Utils.eq(k, 0)) {
+						return _elm_lang$core$Maybe$Just(_p66._0);
+					} else {
+						var _v30 = k - 1,
+							_v31 = _p66._1;
+						k = _v30;
+						ys = _v31;
+						continue find;
+					}
+				}
+			}
+		});
+	return function (xs) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$map,
+			function (i) {
+				return A2(find, i, xs);
+			},
+			A2(
+				_mgold$elm_random_pcg$Random_Pcg$int,
+				0,
+				_elm_lang$core$List$length(xs) - 1));
+	};
+}();
+var _mgold$elm_random_pcg$Random_Pcg$float = F2(
+	function (min, max) {
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var range = _elm_lang$core$Basics$abs(max - min);
+				var n0 = _mgold$elm_random_pcg$Random_Pcg$peel(seed0);
+				var hi = _elm_lang$core$Basics$toFloat(67108863 & n0) * 1.0;
+				var seed1 = _mgold$elm_random_pcg$Random_Pcg$next(seed0);
+				var n1 = _mgold$elm_random_pcg$Random_Pcg$peel(seed1);
+				var lo = _elm_lang$core$Basics$toFloat(134217727 & n1) * 1.0;
+				var val = ((hi * _mgold$elm_random_pcg$Random_Pcg$bit27) + lo) / _mgold$elm_random_pcg$Random_Pcg$bit53;
+				var scaled = (val * range) + min;
+				return {
+					ctor: '_Tuple2',
+					_0: scaled,
+					_1: _mgold$elm_random_pcg$Random_Pcg$next(seed1)
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$frequency = function (pairs) {
+	var pick = F2(
+		function (choices, n) {
+			pick:
+			while (true) {
+				var _p67 = choices;
+				if ((_p67.ctor === '::') && (_p67._0.ctor === '_Tuple2')) {
+					var _p68 = _p67._0._0;
+					if (_elm_lang$core$Native_Utils.cmp(n, _p68) < 1) {
+						return _p67._0._1;
+					} else {
+						var _v33 = _p67._1,
+							_v34 = n - _p68;
+						choices = _v33;
+						n = _v34;
+						continue pick;
+					}
+				} else {
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Random.Pcg',
+						{
+							start: {line: 682, column: 13},
+							end: {line: 690, column: 77}
+						},
+						_p67)('Empty list passed to Random.Pcg.frequency!');
+				}
+			}
+		});
+	var total = _elm_lang$core$List$sum(
+		A2(
+			_elm_lang$core$List$map,
+			function (_p70) {
+				return _elm_lang$core$Basics$abs(
+					_elm_lang$core$Tuple$first(_p70));
+			},
+			pairs));
+	return A2(
+		_mgold$elm_random_pcg$Random_Pcg$andThen,
+		pick(pairs),
+		A2(_mgold$elm_random_pcg$Random_Pcg$float, 0, total));
+};
+var _mgold$elm_random_pcg$Random_Pcg$choices = function (gens) {
+	return _mgold$elm_random_pcg$Random_Pcg$frequency(
+		A2(
+			_elm_lang$core$List$map,
+			function (g) {
+				return {ctor: '_Tuple2', _0: 1, _1: g};
+			},
+			gens));
+};
+var _mgold$elm_random_pcg$Random_Pcg$independentSeed = _mgold$elm_random_pcg$Random_Pcg$Generator(
+	function (seed0) {
+		var gen = A2(_mgold$elm_random_pcg$Random_Pcg$int, 0, 4294967295);
+		var _p71 = A2(
+			_mgold$elm_random_pcg$Random_Pcg$step,
+			A4(
+				_mgold$elm_random_pcg$Random_Pcg$map3,
+				F3(
+					function (v0, v1, v2) {
+						return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+					}),
+				gen,
+				gen,
+				gen),
+			seed0);
+		var state = _p71._0._0;
+		var b = _p71._0._1;
+		var c = _p71._0._2;
+		var seed1 = _p71._1;
+		var incr = 1 | (b ^ c);
+		return {
+			ctor: '_Tuple2',
+			_0: seed1,
+			_1: _mgold$elm_random_pcg$Random_Pcg$next(
+				A2(_mgold$elm_random_pcg$Random_Pcg$Seed, state, incr))
+		};
+	});
+var _mgold$elm_random_pcg$Random_Pcg$fastForward = F2(
+	function (delta0, _p72) {
+		var _p73 = _p72;
+		var _p76 = _p73._1;
+		var helper = F6(
+			function (accMult, accPlus, curMult, curPlus, delta, repeat) {
+				helper:
+				while (true) {
+					var newDelta = delta >>> 1;
+					var curMult_ = A2(_mgold$elm_random_pcg$Random_Pcg$mul32, curMult, curMult);
+					var curPlus_ = A2(_mgold$elm_random_pcg$Random_Pcg$mul32, curMult + 1, curPlus);
+					var _p74 = _elm_lang$core$Native_Utils.eq(delta & 1, 1) ? {
+						ctor: '_Tuple2',
+						_0: A2(_mgold$elm_random_pcg$Random_Pcg$mul32, accMult, curMult),
+						_1: (A2(_mgold$elm_random_pcg$Random_Pcg$mul32, accPlus, curMult) + curPlus) >>> 0
+					} : {ctor: '_Tuple2', _0: accMult, _1: accPlus};
+					var accMult_ = _p74._0;
+					var accPlus_ = _p74._1;
+					if (_elm_lang$core$Native_Utils.eq(newDelta, 0)) {
+						if ((_elm_lang$core$Native_Utils.cmp(delta0, 0) < 0) && repeat) {
+							var _v36 = accMult_,
+								_v37 = accPlus_,
+								_v38 = curMult_,
+								_v39 = curPlus_,
+								_v40 = -1,
+								_v41 = false;
+							accMult = _v36;
+							accPlus = _v37;
+							curMult = _v38;
+							curPlus = _v39;
+							delta = _v40;
+							repeat = _v41;
+							continue helper;
+						} else {
+							return {ctor: '_Tuple2', _0: accMult_, _1: accPlus_};
+						}
+					} else {
+						var _v42 = accMult_,
+							_v43 = accPlus_,
+							_v44 = curMult_,
+							_v45 = curPlus_,
+							_v46 = newDelta,
+							_v47 = repeat;
+						accMult = _v42;
+						accPlus = _v43;
+						curMult = _v44;
+						curPlus = _v45;
+						delta = _v46;
+						repeat = _v47;
+						continue helper;
+					}
+				}
+			});
+		var _p75 = A6(helper, 1, 0, 1664525, _p76, delta0, true);
+		var accMultFinal = _p75._0;
+		var accPlusFinal = _p75._1;
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$Seed,
+			(A2(_mgold$elm_random_pcg$Random_Pcg$mul32, accMultFinal, _p73._0) + accPlusFinal) >>> 0,
+			_p76);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$fromJson = _elm_lang$core$Json_Decode$oneOf(
+	{
+		ctor: '::',
+		_0: A3(
+			_elm_lang$core$Json_Decode$map2,
+			_mgold$elm_random_pcg$Random_Pcg$Seed,
+			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int),
+			A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int)),
+		_1: {
+			ctor: '::',
+			_0: A2(_elm_lang$core$Json_Decode$map, _mgold$elm_random_pcg$Random_Pcg$initialSeed, _elm_lang$core$Json_Decode$int),
+			_1: {ctor: '[]'}
+		}
+	});
+var _feldman4$elm_xb$ComponentTemplate$nouns = {
+	ctor: '::',
+	_0: 'carrion',
+	_1: {
+		ctor: '::',
+		_0: 'fop',
+		_1: {
+			ctor: '::',
+			_0: 'fakir',
+			_1: {
+				ctor: '::',
+				_0: 'halfwit',
+				_1: {
+					ctor: '::',
+					_0: 'highwayman',
+					_1: {
+						ctor: '::',
+						_0: 'judas',
+						_1: {
+							ctor: '::',
+							_0: 'marxist',
+							_1: {
+								ctor: '::',
+								_0: 'monk',
+								_1: {
+									ctor: '::',
+									_0: 'moocher',
+									_1: {
+										ctor: '::',
+										_0: 'mystic',
+										_1: {
+											ctor: '::',
+											_0: 'poltergeist',
+											_1: {
+												ctor: '::',
+												_0: 'regurgitator',
+												_1: {
+													ctor: '::',
+													_0: 'trotskyite',
+													_1: {
+														ctor: '::',
+														_0: 'undertaker',
+														_1: {
+															ctor: '::',
+															_0: 'yahoo',
+															_1: {
+																ctor: '::',
+																_0: 'abuser',
+																_1: {
+																	ctor: '::',
+																	_0: 'academic',
+																	_1: {
+																		ctor: '::',
+																		_0: 'accomplice',
+																		_1: {
+																			ctor: '::',
+																			_0: 'amateur',
+																			_1: {
+																				ctor: '::',
+																				_0: 'apostate',
+																				_1: {
+																					ctor: '::',
+																					_0: 'aristocrat',
+																					_1: {
+																						ctor: '::',
+																						_0: 'arsonist',
+																						_1: {
+																							ctor: '::',
+																							_0: 'assassin',
+																							_1: {
+																								ctor: '::',
+																								_0: 'atheist',
+																								_1: {
+																									ctor: '::',
+																									_0: 'backstabber',
+																									_1: {
+																										ctor: '::',
+																										_0: 'bastard',
+																										_1: {
+																											ctor: '::',
+																											_0: 'betrayer',
+																											_1: {
+																												ctor: '::',
+																												_0: 'bigmouth',
+																												_1: {
+																													ctor: '::',
+																													_0: 'boob',
+																													_1: {
+																														ctor: '::',
+																														_0: 'caveman',
+																														_1: {
+																															ctor: '::',
+																															_0: 'centipede',
+																															_1: {
+																																ctor: '::',
+																																_0: 'cheater',
+																																_1: {
+																																	ctor: '::',
+																																	_0: 'clerk',
+																																	_1: {
+																																		ctor: '::',
+																																		_0: 'collaborator',
+																																		_1: {
+																																			ctor: '::',
+																																			_0: 'communist',
+																																			_1: {
+																																				ctor: '::',
+																																				_0: 'concubine',
+																																				_1: {
+																																					ctor: '::',
+																																					_0: 'coward',
+																																					_1: {
+																																						ctor: '::',
+																																						_0: 'crackpot',
+																																						_1: {
+																																							ctor: '::',
+																																							_0: 'creature',
+																																							_1: {
+																																								ctor: '::',
+																																								_0: 'cretin',
+																																								_1: {
+																																									ctor: '::',
+																																									_0: 'criminal',
+																																									_1: {
+																																										ctor: '::',
+																																										_0: 'cuckold',
+																																										_1: {
+																																											ctor: '::',
+																																											_0: 'cultist',
+																																											_1: {
+																																												ctor: '::',
+																																												_0: 'demagogue',
+																																												_1: {
+																																													ctor: '::',
+																																													_0: 'dignitary',
+																																													_1: {
+																																														ctor: '::',
+																																														_0: 'drunk',
+																																														_1: {
+																																															ctor: '::',
+																																															_0: 'dwarf',
+																																															_1: {
+																																																ctor: '::',
+																																																_0: 'enigma',
+																																																_1: {
+																																																	ctor: '::',
+																																																	_0: 'eunuch',
+																																																	_1: {
+																																																		ctor: '::',
+																																																		_0: 'executioner',
+																																																		_1: {
+																																																			ctor: '::',
+																																																			_0: 'experiment',
+																																																			_1: {
+																																																				ctor: '::',
+																																																				_0: 'failure',
+																																																				_1: {
+																																																					ctor: '::',
+																																																					_0: 'fanatic',
+																																																					_1: {
+																																																						ctor: '::',
+																																																						_0: 'fascist',
+																																																						_1: {
+																																																							ctor: '::',
+																																																							_0: 'fetishist',
+																																																							_1: {
+																																																								ctor: '::',
+																																																								_0: 'filth',
+																																																								_1: {
+																																																									ctor: '::',
+																																																									_0: 'fool',
+																																																									_1: {
+																																																										ctor: '::',
+																																																										_0: 'functionary',
+																																																										_1: {
+																																																											ctor: '::',
+																																																											_0: 'garbageman',
+																																																											_1: {
+																																																												ctor: '::',
+																																																												_0: 'gelding',
+																																																												_1: {
+																																																													ctor: '::',
+																																																													_0: 'goon',
+																																																													_1: {
+																																																														ctor: '::',
+																																																														_0: 'gravedigger',
+																																																														_1: {
+																																																															ctor: '::',
+																																																															_0: 'hack',
+																																																															_1: {
+																																																																ctor: '::',
+																																																																_0: 'hitman',
+																																																																_1: {
+																																																																	ctor: '::',
+																																																																	_0: 'huckster',
+																																																																	_1: {
+																																																																		ctor: '::',
+																																																																		_0: 'hypocrite',
+																																																																		_1: {
+																																																																			ctor: '::',
+																																																																			_0: 'idealist',
+																																																																			_1: {
+																																																																				ctor: '::',
+																																																																				_0: 'individualist',
+																																																																				_1: {
+																																																																					ctor: '::',
+																																																																					_0: 'insect',
+																																																																					_1: {
+																																																																						ctor: '::',
+																																																																						_0: 'invertebrate',
+																																																																						_1: {
+																																																																							ctor: '::',
+																																																																							_0: 'jingoist',
+																																																																							_1: {
+																																																																								ctor: '::',
+																																																																								_0: 'kidnapper',
+																																																																								_1: {
+																																																																									ctor: '::',
+																																																																									_0: 'latecomer',
+																																																																									_1: {
+																																																																										ctor: '::',
+																																																																										_0: 'lawbreaker',
+																																																																										_1: {
+																																																																											ctor: '::',
+																																																																											_0: 'liar',
+																																																																											_1: {
+																																																																												ctor: '::',
+																																																																												_0: 'looter',
+																																																																												_1: {
+																																																																													ctor: '::',
+																																																																													_0: 'loser',
+																																																																													_1: {
+																																																																														ctor: '::',
+																																																																														_0: 'lunatic',
+																																																																														_1: {
+																																																																															ctor: '::',
+																																																																															_0: 'masturbator',
+																																																																															_1: {
+																																																																																ctor: '::',
+																																																																																_0: 'mercenary',
+																																																																																_1: {
+																																																																																	ctor: '::',
+																																																																																	_0: 'miscreant',
+																																																																																	_1: {
+																																																																																		ctor: '::',
+																																																																																		_0: 'moron',
+																																																																																		_1: {
+																																																																																			ctor: '::',
+																																																																																			_0: 'mortician',
+																																																																																			_1: {
+																																																																																				ctor: '::',
+																																																																																				_0: 'murderer',
+																																																																																				_1: {
+																																																																																					ctor: '::',
+																																																																																					_0: 'narcissist',
+																																																																																					_1: {
+																																																																																						ctor: '::',
+																																																																																						_0: 'neophyte',
+																																																																																						_1: {
+																																																																																							ctor: '::',
+																																																																																							_0: 'nincompoop',
+																																																																																							_1: {
+																																																																																								ctor: '::',
+																																																																																								_0: 'parasite',
+																																																																																								_1: {
+																																																																																									ctor: '::',
+																																																																																									_0: 'peasant',
+																																																																																									_1: {
+																																																																																										ctor: '::',
+																																																																																										_0: 'pederast',
+																																																																																										_1: {
+																																																																																											ctor: '::',
+																																																																																											_0: 'philanthropist',
+																																																																																											_1: {
+																																																																																												ctor: '::',
+																																																																																												_0: 'philistine',
+																																																																																												_1: {
+																																																																																													ctor: '::',
+																																																																																													_0: 'philosopher',
+																																																																																													_1: {
+																																																																																														ctor: '::',
+																																																																																														_0: 'pilferer',
+																																																																																														_1: {
+																																																																																															ctor: '::',
+																																																																																															_0: 'pimp',
+																																																																																															_1: {
+																																																																																																ctor: '::',
+																																																																																																_0: 'plagiarizer',
+																																																																																																_1: {
+																																																																																																	ctor: '::',
+																																																																																																	_0: 'poltroon',
+																																																																																																	_1: {
+																																																																																																		ctor: '::',
+																																																																																																		_0: 'pornographer',
+																																																																																																		_1: {
+																																																																																																			ctor: '::',
+																																																																																																			_0: 'priest',
+																																																																																																			_1: {
+																																																																																																				ctor: '::',
+																																																																																																				_0: 'pushover',
+																																																																																																				_1: {
+																																																																																																					ctor: '::',
+																																																																																																					_0: 'pygmy',
+																																																																																																					_1: {
+																																																																																																						ctor: '::',
+																																																																																																						_0: 'racist',
+																																																																																																						_1: {
+																																																																																																							ctor: '::',
+																																																																																																							_0: 'rapist',
+																																																																																																							_1: {
+																																																																																																								ctor: '::',
+																																																																																																								_0: 'rapist',
+																																																																																																								_1: {
+																																																																																																									ctor: '::',
+																																																																																																									_0: 'reactionary',
+																																																																																																									_1: {
+																																																																																																										ctor: '::',
+																																																																																																										_0: 'redneck',
+																																																																																																										_1: {
+																																																																																																											ctor: '::',
+																																																																																																											_0: 'reptile',
+																																																																																																											_1: {
+																																																																																																												ctor: '::',
+																																																																																																												_0: 'riffraff',
+																																																																																																												_1: {
+																																																																																																													ctor: '::',
+																																																																																																													_0: 'scoundrel',
+																																																																																																													_1: {
+																																																																																																														ctor: '::',
+																																																																																																														_0: 'scum',
+																																																																																																														_1: {
+																																																																																																															ctor: '::',
+																																																																																																															_0: 'sinner',
+																																																																																																															_1: {
+																																																																																																																ctor: '::',
+																																																																																																																_0: 'soothsayer',
+																																																																																																																_1: {
+																																																																																																																	ctor: '::',
+																																																																																																																	_0: 'sponge',
+																																																																																																																	_1: {
+																																																																																																																		ctor: '::',
+																																																																																																																		_0: 'spook',
+																																																																																																																		_1: {
+																																																																																																																			ctor: '::',
+																																																																																																																			_0: 'squatter',
+																																																																																																																			_1: {
+																																																																																																																				ctor: '::',
+																																																																																																																				_0: 'stenographer',
+																																																																																																																				_1: {
+																																																																																																																					ctor: '::',
+																																																																																																																					_0: 'swindler',
+																																																																																																																					_1: {
+																																																																																																																						ctor: '::',
+																																																																																																																						_0: 'swineherd',
+																																																																																																																						_1: {
+																																																																																																																							ctor: '::',
+																																																																																																																							_0: 'sycophant',
+																																																																																																																							_1: {
+																																																																																																																								ctor: '::',
+																																																																																																																								_0: 'thug',
+																																																																																																																								_1: {
+																																																																																																																									ctor: '::',
+																																																																																																																									_0: 'traitor',
+																																																																																																																									_1: {
+																																																																																																																										ctor: '::',
+																																																																																																																										_0: 'transient',
+																																																																																																																										_1: {
+																																																																																																																											ctor: '::',
+																																																																																																																											_0: 'trapper',
+																																																																																																																											_1: {
+																																																																																																																												ctor: '::',
+																																																																																																																												_0: 'trash',
+																																																																																																																												_1: {
+																																																																																																																													ctor: '::',
+																																																																																																																													_0: 'turd',
+																																																																																																																													_1: {
+																																																																																																																														ctor: '::',
+																																																																																																																														_0: 'turncoat',
+																																																																																																																														_1: {
+																																																																																																																															ctor: '::',
+																																																																																																																															_0: 'tyrant',
+																																																																																																																															_1: {
+																																																																																																																																ctor: '::',
+																																																																																																																																_0: 'upstart',
+																																																																																																																																_1: {
+																																																																																																																																	ctor: '::',
+																																																																																																																																	_0: 'vandal',
+																																																																																																																																	_1: {
+																																																																																																																																		ctor: '::',
+																																																																																																																																		_0: 'villain',
+																																																																																																																																		_1: {
+																																																																																																																																			ctor: '::',
+																																																																																																																																			_0: 'warlord',
+																																																																																																																																			_1: {
+																																																																																																																																				ctor: '::',
+																																																																																																																																				_0: 'weakling',
+																																																																																																																																				_1: {
+																																																																																																																																					ctor: '::',
+																																																																																																																																					_0: 'weasel',
+																																																																																																																																					_1: {
+																																																																																																																																						ctor: '::',
+																																																																																																																																						_0: 'wimp',
+																																																																																																																																						_1: {
+																																																																																																																																							ctor: '::',
+																																																																																																																																							_0: 'witchdoctor',
+																																																																																																																																							_1: {
+																																																																																																																																								ctor: '::',
+																																																																																																																																								_0: 'zealot',
+																																																																																																																																								_1: {ctor: '[]'}
+																																																																																																																																							}
+																																																																																																																																						}
+																																																																																																																																					}
+																																																																																																																																				}
+																																																																																																																																			}
+																																																																																																																																		}
+																																																																																																																																	}
+																																																																																																																																}
+																																																																																																																															}
+																																																																																																																														}
+																																																																																																																													}
+																																																																																																																												}
+																																																																																																																											}
+																																																																																																																										}
+																																																																																																																									}
+																																																																																																																								}
+																																																																																																																							}
+																																																																																																																						}
+																																																																																																																					}
+																																																																																																																				}
+																																																																																																																			}
+																																																																																																																		}
+																																																																																																																	}
+																																																																																																																}
+																																																																																																															}
+																																																																																																														}
+																																																																																																													}
+																																																																																																												}
+																																																																																																											}
+																																																																																																										}
+																																																																																																									}
+																																																																																																								}
+																																																																																																							}
+																																																																																																						}
+																																																																																																					}
+																																																																																																				}
+																																																																																																			}
+																																																																																																		}
+																																																																																																	}
+																																																																																																}
+																																																																																															}
+																																																																																														}
+																																																																																													}
+																																																																																												}
+																																																																																											}
+																																																																																										}
+																																																																																									}
+																																																																																								}
+																																																																																							}
+																																																																																						}
+																																																																																					}
+																																																																																				}
+																																																																																			}
+																																																																																		}
+																																																																																	}
+																																																																																}
+																																																																															}
+																																																																														}
+																																																																													}
+																																																																												}
+																																																																											}
+																																																																										}
+																																																																									}
+																																																																								}
+																																																																							}
+																																																																						}
+																																																																					}
+																																																																				}
+																																																																			}
+																																																																		}
+																																																																	}
+																																																																}
+																																																															}
+																																																														}
+																																																													}
+																																																												}
+																																																											}
+																																																										}
+																																																									}
+																																																								}
+																																																							}
+																																																						}
+																																																					}
+																																																				}
+																																																			}
+																																																		}
+																																																	}
+																																																}
+																																															}
+																																														}
+																																													}
+																																												}
+																																											}
+																																										}
+																																									}
+																																								}
+																																							}
+																																						}
+																																					}
+																																				}
+																																			}
+																																		}
+																																	}
+																																}
+																															}
+																														}
+																													}
+																												}
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+var _feldman4$elm_xb$ComponentTemplate$adjectives = {
+	ctor: '::',
+	_0: 'apprentice',
+	_1: {
+		ctor: '::',
+		_0: 'craven',
+		_1: {
+			ctor: '::',
+			_0: 'defenceless',
+			_1: {
+				ctor: '::',
+				_0: 'orthodox',
+				_1: {
+					ctor: '::',
+					_0: 'alcoholic',
+					_1: {
+						ctor: '::',
+						_0: 'antediluvian',
+						_1: {
+							ctor: '::',
+							_0: 'armchair',
+							_1: {
+								ctor: '::',
+								_0: 'asthmatic',
+								_1: {
+									ctor: '::',
+									_0: 'atrophied',
+									_1: {
+										ctor: '::',
+										_0: 'avaricious',
+										_1: {
+											ctor: '::',
+											_0: 'backwater',
+											_1: {
+												ctor: '::',
+												_0: 'backwoods',
+												_1: {
+													ctor: '::',
+													_0: 'bankrupt',
+													_1: {
+														ctor: '::',
+														_0: 'bearded',
+														_1: {
+															ctor: '::',
+															_0: 'bellicose',
+															_1: {
+																ctor: '::',
+																_0: 'belligerent',
+																_1: {
+																	ctor: '::',
+																	_0: 'bigoted',
+																	_1: {
+																		ctor: '::',
+																		_0: 'botched',
+																		_1: {
+																			ctor: '::',
+																			_0: 'breastfed',
+																			_1: {
+																				ctor: '::',
+																				_0: 'bucktoothed',
+																				_1: {
+																					ctor: '::',
+																					_0: 'cantankerous',
+																					_1: {
+																						ctor: '::',
+																						_0: 'careless',
+																						_1: {
+																							ctor: '::',
+																							_0: 'celebrated',
+																							_1: {
+																								ctor: '::',
+																								_0: 'clamorous',
+																								_1: {
+																									ctor: '::',
+																									_0: 'closet',
+																									_1: {
+																										ctor: '::',
+																										_0: 'clumsy',
+																										_1: {
+																											ctor: '::',
+																											_0: 'common',
+																											_1: {
+																												ctor: '::',
+																												_0: 'constipated',
+																												_1: {
+																													ctor: '::',
+																													_0: 'crass',
+																													_1: {
+																														ctor: '::',
+																														_0: 'daft',
+																														_1: {
+																															ctor: '::',
+																															_0: 'deceased',
+																															_1: {
+																																ctor: '::',
+																																_0: 'defrocked',
+																																_1: {
+																																	ctor: '::',
+																																	_0: 'deranged',
+																																	_1: {
+																																		ctor: '::',
+																																		_0: 'despicable',
+																																		_1: {
+																																			ctor: '::',
+																																			_0: 'dimwitted',
+																																			_1: {
+																																				ctor: '::',
+																																				_0: 'dirty',
+																																				_1: {
+																																					ctor: '::',
+																																					_0: 'diseased',
+																																					_1: {
+																																						ctor: '::',
+																																						_0: 'disgraced',
+																																						_1: {
+																																							ctor: '::',
+																																							_0: 'disguised',
+																																							_1: {
+																																								ctor: '::',
+																																								_0: 'dishonest',
+																																								_1: {
+																																									ctor: '::',
+																																									_0: 'disingenuous',
+																																									_1: {
+																																										ctor: '::',
+																																										_0: 'disorganized',
+																																										_1: {
+																																											ctor: '::',
+																																											_0: 'drugstore',
+																																											_1: {
+																																												ctor: '::',
+																																												_0: 'embarrassing',
+																																												_1: {
+																																													ctor: '::',
+																																													_0: 'floundering',
+																																													_1: {
+																																														ctor: '::',
+																																														_0: 'forsaken',
+																																														_1: {
+																																															ctor: '::',
+																																															_0: 'foul',
+																																															_1: {
+																																																ctor: '::',
+																																																_0: 'fraudulent',
+																																																_1: {
+																																																	ctor: '::',
+																																																	_0: 'garish',
+																																																	_1: {
+																																																		ctor: '::',
+																																																		_0: 'gilded',
+																																																		_1: {
+																																																			ctor: '::',
+																																																			_0: 'gutless',
+																																																			_1: {
+																																																				ctor: '::',
+																																																				_0: 'hairless',
+																																																				_1: {
+																																																					ctor: '::',
+																																																					_0: 'humorless',
+																																																					_1: {
+																																																						ctor: '::',
+																																																						_0: 'ignorant',
+																																																						_1: {
+																																																							ctor: '::',
+																																																							_0: 'impotent',
+																																																							_1: {
+																																																								ctor: '::',
+																																																								_0: 'impoverished',
+																																																								_1: {
+																																																									ctor: '::',
+																																																									_0: 'incontinent',
+																																																									_1: {
+																																																										ctor: '::',
+																																																										_0: 'indiscreet',
+																																																										_1: {
+																																																											ctor: '::',
+																																																											_0: 'ineffectual',
+																																																											_1: {
+																																																												ctor: '::',
+																																																												_0: 'insignificant',
+																																																												_1: {
+																																																													ctor: '::',
+																																																													_0: 'insincere',
+																																																													_1: {
+																																																														ctor: '::',
+																																																														_0: 'insufferable',
+																																																														_1: {
+																																																															ctor: '::',
+																																																															_0: 'intellectual',
+																																																															_1: {
+																																																																ctor: '::',
+																																																																_0: 'inveterate',
+																																																																_1: {
+																																																																	ctor: '::',
+																																																																	_0: 'irrelevant',
+																																																																	_1: {
+																																																																		ctor: '::',
+																																																																		_0: 'jackbooted',
+																																																																		_1: {
+																																																																			ctor: '::',
+																																																																			_0: 'jaded',
+																																																																			_1: {
+																																																																				ctor: '::',
+																																																																				_0: 'jilted',
+																																																																				_1: {
+																																																																					ctor: '::',
+																																																																					_0: 'kowtowing',
+																																																																					_1: {
+																																																																						ctor: '::',
+																																																																						_0: 'licentious',
+																																																																						_1: {
+																																																																							ctor: '::',
+																																																																							_0: 'listless',
+																																																																							_1: {
+																																																																								ctor: '::',
+																																																																								_0: 'litigious',
+																																																																								_1: {
+																																																																									ctor: '::',
+																																																																									_0: 'loathsome',
+																																																																									_1: {
+																																																																										ctor: '::',
+																																																																										_0: 'lonely',
+																																																																										_1: {
+																																																																											ctor: '::',
+																																																																											_0: 'luckless',
+																																																																											_1: {
+																																																																												ctor: '::',
+																																																																												_0: 'malignant',
+																																																																												_1: {
+																																																																													ctor: '::',
+																																																																													_0: 'mean',
+																																																																													_1: {
+																																																																														ctor: '::',
+																																																																														_0: 'meddlesome',
+																																																																														_1: {
+																																																																															ctor: '::',
+																																																																															_0: 'medicated',
+																																																																															_1: {
+																																																																																ctor: '::',
+																																																																																_0: 'melancholy',
+																																																																																_1: {
+																																																																																	ctor: '::',
+																																																																																	_0: 'misinformed',
+																																																																																	_1: {
+																																																																																		ctor: '::',
+																																																																																		_0: 'mistaken',
+																																																																																		_1: {
+																																																																																			ctor: '::',
+																																																																																			_0: 'monied',
+																																																																																			_1: {
+																																																																																				ctor: '::',
+																																																																																				_0: 'morose',
+																																																																																				_1: {
+																																																																																					ctor: '::',
+																																																																																					_0: 'nauseating',
+																																																																																					_1: {
+																																																																																						ctor: '::',
+																																																																																						_0: 'obsequious',
+																																																																																						_1: {
+																																																																																							ctor: '::',
+																																																																																							_0: 'odious',
+																																																																																							_1: {
+																																																																																								ctor: '::',
+																																																																																								_0: 'officious',
+																																																																																								_1: {
+																																																																																									ctor: '::',
+																																																																																									_0: 'overfunded',
+																																																																																									_1: {
+																																																																																										ctor: '::',
+																																																																																										_0: 'overpaid',
+																																																																																										_1: {
+																																																																																											ctor: '::',
+																																																																																											_0: 'pallid',
+																																																																																											_1: {
+																																																																																												ctor: '::',
+																																																																																												_0: 'poisonous',
+																																																																																												_1: {
+																																																																																													ctor: '::',
+																																																																																													_0: 'political',
+																																																																																													_1: {
+																																																																																														ctor: '::',
+																																																																																														_0: 'pompous',
+																																																																																														_1: {
+																																																																																															ctor: '::',
+																																																																																															_0: 'powdered',
+																																																																																															_1: {
+																																																																																																ctor: '::',
+																																																																																																_0: 'precocious',
+																																																																																																_1: {
+																																																																																																	ctor: '::',
+																																																																																																	_0: 'predatory',
+																																																																																																	_1: {
+																																																																																																		ctor: '::',
+																																																																																																		_0: 'prejudiced',
+																																																																																																		_1: {
+																																																																																																			ctor: '::',
+																																																																																																			_0: 'preposterous',
+																																																																																																			_1: {
+																																																																																																				ctor: '::',
+																																																																																																				_0: 'reckless',
+																																																																																																				_1: {
+																																																																																																					ctor: '::',
+																																																																																																					_0: 'renegade',
+																																																																																																					_1: {
+																																																																																																						ctor: '::',
+																																																																																																						_0: 'rented',
+																																																																																																						_1: {
+																																																																																																							ctor: '::',
+																																																																																																							_0: 'retired',
+																																																																																																							_1: {
+																																																																																																								ctor: '::',
+																																																																																																								_0: 'scheming',
+																																																																																																								_1: {
+																																																																																																									ctor: '::',
+																																																																																																									_0: 'simpering',
+																																																																																																									_1: {
+																																																																																																										ctor: '::',
+																																																																																																										_0: 'sinister',
+																																																																																																										_1: {
+																																																																																																											ctor: '::',
+																																																																																																											_0: 'sniveling',
+																																																																																																											_1: {
+																																																																																																												ctor: '::',
+																																																																																																												_0: 'spineless',
+																																																																																																												_1: {
+																																																																																																													ctor: '::',
+																																																																																																													_0: 'subservient',
+																																																																																																													_1: {
+																																																																																																														ctor: '::',
+																																																																																																														_0: 'sweaty',
+																																																																																																														_1: {
+																																																																																																															ctor: '::',
+																																																																																																															_0: 'synthetic',
+																																																																																																															_1: {
+																																																																																																																ctor: '::',
+																																																																																																																_0: 'talentless',
+																																																																																																																_1: {
+																																																																																																																	ctor: '::',
+																																																																																																																	_0: 'tendentious',
+																																																																																																																	_1: {
+																																																																																																																		ctor: '::',
+																																																																																																																		_0: 'treacherous',
+																																																																																																																		_1: {
+																																																																																																																			ctor: '::',
+																																																																																																																			_0: 'tufted',
+																																																																																																																			_1: {
+																																																																																																																				ctor: '::',
+																																																																																																																				_0: 'unctuous',
+																																																																																																																				_1: {
+																																																																																																																					ctor: '::',
+																																																																																																																					_0: 'underhanded',
+																																																																																																																					_1: {
+																																																																																																																						ctor: '::',
+																																																																																																																						_0: 'underqualified',
+																																																																																																																						_1: {
+																																																																																																																							ctor: '::',
+																																																																																																																							_0: 'unelected',
+																																																																																																																							_1: {
+																																																																																																																								ctor: '::',
+																																																																																																																								_0: 'unemployed',
+																																																																																																																								_1: {
+																																																																																																																									ctor: '::',
+																																																																																																																									_0: 'unprincipled',
+																																																																																																																									_1: {
+																																																																																																																										ctor: '::',
+																																																																																																																										_0: 'unregenerate',
+																																																																																																																										_1: {
+																																																																																																																											ctor: '::',
+																																																																																																																											_0: 'unsuccessful',
+																																																																																																																											_1: {
+																																																																																																																												ctor: '::',
+																																																																																																																												_0: 'unwashed',
+																																																																																																																												_1: {
+																																																																																																																													ctor: '::',
+																																																																																																																													_0: 'unwitting',
+																																																																																																																													_1: {
+																																																																																																																														ctor: '::',
+																																																																																																																														_0: 'variegated',
+																																																																																																																														_1: {
+																																																																																																																															ctor: '::',
+																																																																																																																															_0: 'vindictive',
+																																																																																																																															_1: {
+																																																																																																																																ctor: '::',
+																																																																																																																																_0: 'worthless',
+																																																																																																																																_1: {
+																																																																																																																																	ctor: '::',
+																																																																																																																																	_0: 'wretched',
+																																																																																																																																	_1: {ctor: '[]'}
+																																																																																																																																}
+																																																																																																																															}
+																																																																																																																														}
+																																																																																																																													}
+																																																																																																																												}
+																																																																																																																											}
+																																																																																																																										}
+																																																																																																																									}
+																																																																																																																								}
+																																																																																																																							}
+																																																																																																																						}
+																																																																																																																					}
+																																																																																																																				}
+																																																																																																																			}
+																																																																																																																		}
+																																																																																																																	}
+																																																																																																																}
+																																																																																																															}
+																																																																																																														}
+																																																																																																													}
+																																																																																																												}
+																																																																																																											}
+																																																																																																										}
+																																																																																																									}
+																																																																																																								}
+																																																																																																							}
+																																																																																																						}
+																																																																																																					}
+																																																																																																				}
+																																																																																																			}
+																																																																																																		}
+																																																																																																	}
+																																																																																																}
+																																																																																															}
+																																																																																														}
+																																																																																													}
+																																																																																												}
+																																																																																											}
+																																																																																										}
+																																																																																									}
+																																																																																								}
+																																																																																							}
+																																																																																						}
+																																																																																					}
+																																																																																				}
+																																																																																			}
+																																																																																		}
+																																																																																	}
+																																																																																}
+																																																																															}
+																																																																														}
+																																																																													}
+																																																																												}
+																																																																											}
+																																																																										}
+																																																																									}
+																																																																								}
+																																																																							}
+																																																																						}
+																																																																					}
+																																																																				}
+																																																																			}
+																																																																		}
+																																																																	}
+																																																																}
+																																																															}
+																																																														}
+																																																													}
+																																																												}
+																																																											}
+																																																										}
+																																																									}
+																																																								}
+																																																							}
+																																																						}
+																																																					}
+																																																				}
+																																																			}
+																																																		}
+																																																	}
+																																																}
+																																															}
+																																														}
+																																													}
+																																												}
+																																											}
+																																										}
+																																									}
+																																								}
+																																							}
+																																						}
+																																					}
+																																				}
+																																			}
+																																		}
+																																	}
+																																}
+																															}
+																														}
+																													}
+																												}
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+var _feldman4$elm_xb$ComponentTemplate$requestScore = F3(
+	function (challenge, input, choices) {
+		var listString = function (x) {
+			return _elm_lang$core$Json_Encode$list(
+				A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, x));
+		};
+		var request = A2(
+			_elm_lang$core$Json_Encode$encode,
+			4,
+			_elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'challenge',
+						_1: listString(challenge)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'input',
+							_1: listString(input)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'choicesA',
+								_1: listString(
+									_elm_lang$core$Tuple$first(choices))
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'choicesB',
+									_1: listString(
+										_elm_lang$core$Tuple$second(choices))
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}));
+		var a = A2(_elm_lang$core$Debug$log, 'sent', request);
+		return A2(_elm_lang$websocket$WebSocket$send, 'ws://localhost:5000/score', request);
+	});
+var _feldman4$elm_xb$ComponentTemplate$decodeScores = function (json) {
+	var decoder = function (x) {
+		var _p0 = x;
+		if (_p0.ctor === 'Ok') {
+			return _p0._0;
+		} else {
+			var a = A2(_elm_lang$core$Debug$log, 'err', _p0._0);
+			return -1;
+		}
+	};
+	var choiceA = decoder(
+		A2(
+			_elm_lang$core$Json_Decode$decodeString,
+			A2(_elm_lang$core$Json_Decode$field, 'scoreA', _elm_lang$core$Json_Decode$float),
+			json));
+	var choiceB = decoder(
+		A2(
+			_elm_lang$core$Json_Decode$decodeString,
+			A2(_elm_lang$core$Json_Decode$field, 'scoreB', _elm_lang$core$Json_Decode$float),
+			json));
+	return {ctor: '_Tuple2', _0: choiceA, _1: choiceB};
+};
+var _feldman4$elm_xb$ComponentTemplate$argSort = function (input) {
+	return A2(
+		_elm_lang$core$List$map,
+		_elm_lang$core$Tuple$second,
+		_elm_lang$core$List$sort(
+			A2(
+				_elm_lang$core$List$indexedMap,
+				F2(
+					function (a, b) {
+						return {ctor: '_Tuple2', _0: b, _1: a};
+					}),
+				input)));
+};
+var _feldman4$elm_xb$ComponentTemplate$indexList = F2(
+	function (data, index) {
+		var f = function (i) {
+			var _p1 = _elm_lang$core$List$head(
+				A2(_elm_lang$core$List$drop, i, data));
+			if (_p1.ctor === 'Just') {
+				return {
+					ctor: '::',
+					_0: _p1._0,
+					_1: {ctor: '[]'}
+				};
+			} else {
+				return {ctor: '[]'};
+			}
+		};
+		return _elm_lang$core$List$concat(
+			A2(_elm_lang$core$List$map, f, index));
+	});
+var _feldman4$elm_xb$ComponentTemplate$initChallenge = {
+	ctor: '_Tuple2',
+	_0: A2(
+		_mgold$elm_random_pcg$Random_Pcg$map,
+		_elm_lang$core$Maybe$withDefault('random-adjective'),
+		_mgold$elm_random_pcg$Random_Pcg$sample(_feldman4$elm_xb$ComponentTemplate$adjectives)),
+	_1: A2(
+		_mgold$elm_random_pcg$Random_Pcg$map,
+		_elm_lang$core$Maybe$withDefault('random-noun'),
+		_mgold$elm_random_pcg$Random_Pcg$sample(_feldman4$elm_xb$ComponentTemplate$nouns))
+};
+var _feldman4$elm_xb$ComponentTemplate$initVocab = F2(
+	function (n, vocab) {
+		var vocabSize = _elm_lang$core$List$length(vocab);
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$map,
+			_elm_lang$core$List$take(n),
+			A2(
+				_mgold$elm_random_pcg$Random_Pcg$map,
+				_feldman4$elm_xb$ComponentTemplate$indexList(vocab),
+				A2(
+					_mgold$elm_random_pcg$Random_Pcg$map,
+					_feldman4$elm_xb$ComponentTemplate$argSort,
+					A2(
+						_mgold$elm_random_pcg$Random_Pcg$list,
+						vocabSize,
+						A2(_mgold$elm_random_pcg$Random_Pcg$float, 0, 1)))));
+	});
+var _feldman4$elm_xb$ComponentTemplate$getAdjNoun = function (model) {
+	var f = function (x) {
+		return !A2(
+			_elm_lang$core$List$member,
+			x,
+			A2(_elm_lang$core$Basics_ops['++'], model.input, model.challenge));
+	};
+	var adjectivesFilt = A2(_elm_lang$core$List$filter, f, _feldman4$elm_xb$ComponentTemplate$adjectives);
+	var _p2 = A2(
+		_mgold$elm_random_pcg$Random_Pcg$step,
+		A2(_feldman4$elm_xb$ComponentTemplate$initVocab, 5, adjectivesFilt),
+		model.seed);
+	var adj = _p2._0;
+	var seed1 = _p2._1;
+	var nounsFilt = A2(_elm_lang$core$List$filter, f, _feldman4$elm_xb$ComponentTemplate$nouns);
+	var _p3 = A2(
+		_mgold$elm_random_pcg$Random_Pcg$step,
+		A2(_feldman4$elm_xb$ComponentTemplate$initVocab, 5, nounsFilt),
+		seed1);
+	var nou = _p3._0;
+	var seed2 = _p3._1;
+	return {ctor: '_Tuple3', _0: adj, _1: nou, _2: seed2};
+};
+var _feldman4$elm_xb$ComponentTemplate$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {challenge: a, input: b, score: c, choices: d, appState: e, seed: f};
 	});
 var _feldman4$elm_xb$ComponentTemplate$Map = {ctor: 'Map'};
+var _feldman4$elm_xb$ComponentTemplate$Prompt = {ctor: 'Prompt'};
+var _feldman4$elm_xb$ComponentTemplate$Splash = {ctor: 'Splash'};
+var _feldman4$elm_xb$ComponentTemplate$Score = function (a) {
+	return {ctor: 'Score', _0: a};
+};
+var _feldman4$elm_xb$ComponentTemplate$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$websocket$WebSocket$listen, 'ws://localhost:5000/score', _feldman4$elm_xb$ComponentTemplate$Score),
+			_1: {ctor: '[]'}
+		});
+};
+var _feldman4$elm_xb$ComponentTemplate$NewTime = function (a) {
+	return {ctor: 'NewTime', _0: a};
+};
+var _feldman4$elm_xb$ComponentTemplate$init = function () {
+	var a = A2(
+		_elm_lang$core$Debug$log,
+		'word counts',
+		{
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$List$length(_feldman4$elm_xb$ComponentTemplate$adjectives),
+			_1: _elm_lang$core$List$length(_feldman4$elm_xb$ComponentTemplate$nouns)
+		});
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		{
+			challenge: {
+				ctor: '::',
+				_0: 'Rancid',
+				_1: {
+					ctor: '::',
+					_0: 'Felon',
+					_1: {ctor: '[]'}
+				}
+			},
+			input: {ctor: '[]'},
+			choices: {
+				ctor: '_Tuple2',
+				_0: {ctor: '[]'},
+				_1: {ctor: '[]'}
+			},
+			score: {ctor: '[]'},
+			appState: _feldman4$elm_xb$ComponentTemplate$Splash,
+			seed: _mgold$elm_random_pcg$Random_Pcg$initialSeed(0)
+		},
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$core$Task$perform, _feldman4$elm_xb$ComponentTemplate$NewTime, _elm_lang$core$Time$now),
+			_1: {ctor: '[]'}
+		});
+}();
 var _feldman4$elm_xb$ComponentTemplate$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'Click':
-				var appState = _elm_lang$core$Native_Utils.eq(
+				var newInput = A2(
+					_elm_lang$core$Basics_ops['++'],
+					model.input,
+					{
+						ctor: '::',
+						_0: _p4._0,
+						_1: {ctor: '[]'}
+					});
+				var _p5 = _elm_lang$core$Native_Utils.eq(
 					A2(
 						_elm_lang$core$Basics_ops['%'],
 						_elm_lang$core$List$length(model.input),
 						2),
-					1) ? _feldman4$elm_xb$ComponentTemplate$Map : model.appState;
+					1) ? {
+					ctor: '_Tuple2',
+					_0: _feldman4$elm_xb$ComponentTemplate$Map,
+					_1: A3(_feldman4$elm_xb$ComponentTemplate$requestScore, model.challenge, newInput, model.choices)
+				} : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model.appState,
+					{ctor: '[]'});
+				var appState = _p5._0;
+				var newCmd = _p5._1;
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{input: newInput, appState: appState}),
+					{
+						ctor: '::',
+						_0: newCmd,
+						_1: {ctor: '[]'}
+					});
+			case 'ToState':
+				var _p7 = _p4._0;
+				var _p6 = _p7;
+				if (_p6.ctor === 'Prompt') {
+					return _elm_lang$core$Native_Utils.eq(
+						_elm_lang$core$List$length(model.input),
+						6) ? _feldman4$elm_xb$ComponentTemplate$init : A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{appState: _p7}),
+						{ctor: '[]'});
+				} else {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{appState: _p7}),
+						{ctor: '[]'});
+				}
+			case 'NewTime':
+				var _p8 = _feldman4$elm_xb$ComponentTemplate$initChallenge;
+				var gA = _p8._0;
+				var gB = _p8._1;
+				var seed0 = _mgold$elm_random_pcg$Random_Pcg$initialSeed(
+					_elm_lang$core$Basics$round(_p4._0));
+				var _p9 = A2(_mgold$elm_random_pcg$Random_Pcg$step, gA, seed0);
+				var wordA = _p9._0;
+				var seed2 = _p9._1;
+				var _p10 = A2(_mgold$elm_random_pcg$Random_Pcg$step, gB, seed2);
+				var wordB = _p10._0;
+				var seed3 = _p10._1;
+				var newModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						seed: seed3,
+						challenge: {
+							ctor: '::',
+							_0: wordA,
+							_1: {
+								ctor: '::',
+								_0: wordB,
+								_1: {ctor: '[]'}
+							}
+						}
+					});
+				var _p11 = _feldman4$elm_xb$ComponentTemplate$getAdjNoun(newModel);
+				var adj = _p11._0;
+				var nou = _p11._1;
+				var finalSeed = _p11._2;
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						newModel,
+						{
+							choices: {ctor: '_Tuple2', _0: adj, _1: nou},
+							seed: finalSeed
+						}),
+					{ctor: '[]'});
+			default:
+				var _p14 = _p4._0;
+				var _p12 = _feldman4$elm_xb$ComponentTemplate$getAdjNoun(model);
+				var adj = _p12._0;
+				var nou = _p12._1;
+				var seed = _p12._2;
+				var _p13 = _feldman4$elm_xb$ComponentTemplate$decodeScores(_p14);
+				var scoreA = _p13._0;
+				var scoreB = _p13._1;
+				var a = A2(_elm_lang$core$Debug$log, 'incoming', _p14);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							input: A2(
+							score: A2(
 								_elm_lang$core$Basics_ops['++'],
-								model.input,
+								model.score,
 								{
 									ctor: '::',
-									_0: _p0._0,
+									_0: {ctor: '_Tuple2', _0: scoreA, _1: scoreB},
 									_1: {ctor: '[]'}
 								}),
-							appState: appState
+							choices: {ctor: '_Tuple2', _0: adj, _1: nou},
+							seed: seed
 						}),
-					{ctor: '[]'});
-			case 'ToState':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{appState: _p0._0}),
-					{ctor: '[]'});
-			default:
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
 					{ctor: '[]'});
 		}
 	});
-var _feldman4$elm_xb$ComponentTemplate$Prompt = {ctor: 'Prompt'};
-var _feldman4$elm_xb$ComponentTemplate$Splash = {ctor: 'Splash'};
-var _feldman4$elm_xb$ComponentTemplate$init = function () {
-	var nouns = {
-		ctor: '::',
-		_0: 'weakling',
-		_1: {
-			ctor: '::',
-			_0: 'backstabber',
-			_1: {
-				ctor: '::',
-				_0: 'wimp',
-				_1: {
-					ctor: '::',
-					_0: 'criminal',
-					_1: {
-						ctor: '::',
-						_0: 'squatter',
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		}
-	};
-	var adjectives = {
-		ctor: '::',
-		_0: 'unctuous',
-		_1: {
-			ctor: '::',
-			_0: 'unwashed',
-			_1: {
-				ctor: '::',
-				_0: 'gutless',
-				_1: {
-					ctor: '::',
-					_0: 'defrocked',
-					_1: {
-						ctor: '::',
-						_0: 'preposterous',
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		}
-	};
-	return A2(
-		_elm_lang$core$Platform_Cmd_ops['!'],
-		{
-			challenge: {ctor: '_Tuple2', _0: 'Rancid', _1: 'Felon'},
-			input: {ctor: '[]'},
-			choices: {ctor: '_Tuple2', _0: adjectives, _1: nouns},
-			score: 0,
-			appState: _feldman4$elm_xb$ComponentTemplate$Splash
-		},
-		{ctor: '[]'});
-}();
-var _feldman4$elm_xb$ComponentTemplate$NoOp = {ctor: 'NoOp'};
 var _feldman4$elm_xb$ComponentTemplate$ToState = function (a) {
 	return {ctor: 'ToState', _0: a};
 };
 var _feldman4$elm_xb$ComponentTemplate$viewSplash = function (model) {
 	var introString3 = 'Reveal him in 3 tries.';
-	var impostorId = A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Tuple$first(model.challenge),
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			' ',
-			_elm_lang$core$Tuple$second(model.challenge)));
+	var impostorId = A2(_elm_lang$core$String$join, ' ', model.challenge);
 	var impostorDiv = A2(
 		_elm_lang$html$Html$div,
 		{
@@ -8569,8 +11378,8 @@ var _feldman4$elm_xb$ComponentTemplate$viewPrompt = function (model) {
 		choicesList);
 };
 var _feldman4$elm_xb$ComponentTemplate$view = function (model) {
-	var _p1 = model.appState;
-	switch (_p1.ctor) {
+	var _p15 = model.appState;
+	switch (_p15.ctor) {
 		case 'Splash':
 			return _feldman4$elm_xb$ComponentTemplate$viewSplash(model);
 		case 'Map':
