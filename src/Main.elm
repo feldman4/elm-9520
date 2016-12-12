@@ -226,7 +226,7 @@ getAdjNoun model =
 webSocketPath : String
 webSocketPath =
     -- "ws://0.0.0.0:5000"
-    "ws://elm-9520.herokuapp.com"
+    "wss://elm-9520.herokuapp.com"
 
 
 
