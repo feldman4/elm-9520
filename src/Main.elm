@@ -101,6 +101,7 @@ type AppState
     = Splash
     | Prompt
     | Map
+    | Waiting
 
 
 
@@ -124,7 +125,7 @@ update msg model =
 
                 ( appState, newCmd ) =
                     if ((List.length model.input) % 2) == 1 then
-                        ( Map, (requestScore model.challenge newInput model.choices) )
+                        ( Waiting, (requestScore model.challenge newInput model.choices) )
                     else
                         model.appState ! []
 
@@ -193,6 +194,7 @@ update msg model =
             in
                 { model
                     | score = model.score ++ [ ( scoreA, scoreB ) ]
+                    , appState = Map
                 }
                     ! []
 
@@ -296,6 +298,9 @@ view model =
         Map ->
             viewMap model
 
+        Waiting ->
+            viewMap model
+
         Prompt ->
             viewPrompt model
 
@@ -360,8 +365,16 @@ viewMap model =
 
         inputString =
             "History: " ++ (String.join ", " model.input)
+
+        clickResponse =
+            case model.appState of
+                Waiting ->
+                    []
+
+                _ ->
+                    [ onClick (ToState Prompt) ]
     in
-        div [ id "main", onClick (ToState Prompt) ]
+        div ([ id "main" ] ++ clickResponse)
             ([ div [ id "challenge" ] [ text challengeString ]
              , div [ id "score" ] [ text scoreString ]
              , div [ id "input" ] [ text inputString ]

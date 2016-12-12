@@ -10973,6 +10973,7 @@ var _feldman4$elm_xb$ComponentTemplate$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {challenge: a, input: b, score: c, choices: d, appState: e, seed: f};
 	});
+var _feldman4$elm_xb$ComponentTemplate$Waiting = {ctor: 'Waiting'};
 var _feldman4$elm_xb$ComponentTemplate$Map = {ctor: 'Map'};
 var _feldman4$elm_xb$ComponentTemplate$Prompt = {ctor: 'Prompt'};
 var _feldman4$elm_xb$ComponentTemplate$Splash = {ctor: 'Splash'};
@@ -11057,7 +11058,7 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 						2),
 					1) ? {
 					ctor: '_Tuple2',
-					_0: _feldman4$elm_xb$ComponentTemplate$Map,
+					_0: _feldman4$elm_xb$ComponentTemplate$Waiting,
 					_1: A3(_feldman4$elm_xb$ComponentTemplate$requestScore, model.challenge, newInput, model.choices)
 				} : A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -11152,7 +11153,8 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: scoreA, _1: scoreB},
 									_1: {ctor: '[]'}
-								})
+								}),
+							appState: _feldman4$elm_xb$ComponentTemplate$Map
 						}),
 					{ctor: '[]'});
 		}
@@ -11276,6 +11278,19 @@ var _feldman4$elm_xb$ComponentTemplate$viewSplash = function (model) {
 		});
 };
 var _feldman4$elm_xb$ComponentTemplate$viewMap = function (model) {
+	var clickResponse = function () {
+		var _p15 = model.appState;
+		if (_p15.ctor === 'Waiting') {
+			return {ctor: '[]'};
+		} else {
+			return {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_feldman4$elm_xb$ComponentTemplate$ToState(_feldman4$elm_xb$ComponentTemplate$Prompt)),
+				_1: {ctor: '[]'}
+			};
+		}
+	}();
 	var inputString = A2(
 		_elm_lang$core$Basics_ops['++'],
 		'History: ',
@@ -11287,16 +11302,14 @@ var _feldman4$elm_xb$ComponentTemplate$viewMap = function (model) {
 		_elm_lang$core$Basics$toString(model.score));
 	return A2(
 		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('main'),
-			_1: {
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_feldman4$elm_xb$ComponentTemplate$ToState(_feldman4$elm_xb$ComponentTemplate$Prompt)),
+				_0: _elm_lang$html$Html_Attributes$id('main'),
 				_1: {ctor: '[]'}
-			}
-		},
+			},
+			clickResponse),
 		{
 			ctor: '::',
 			_0: A2(
@@ -11386,11 +11399,13 @@ var _feldman4$elm_xb$ComponentTemplate$viewPrompt = function (model) {
 		choicesList);
 };
 var _feldman4$elm_xb$ComponentTemplate$view = function (model) {
-	var _p15 = model.appState;
-	switch (_p15.ctor) {
+	var _p16 = model.appState;
+	switch (_p16.ctor) {
 		case 'Splash':
 			return _feldman4$elm_xb$ComponentTemplate$viewSplash(model);
 		case 'Map':
+			return _feldman4$elm_xb$ComponentTemplate$viewMap(model);
+		case 'Waiting':
 			return _feldman4$elm_xb$ComponentTemplate$viewMap(model);
 		default:
 			return _feldman4$elm_xb$ComponentTemplate$viewPrompt(model);
