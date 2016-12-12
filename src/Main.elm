@@ -223,6 +223,17 @@ getAdjNoun model =
 -- we are going to ask the server for a score based on the user's choice
 
 
+webSocketPath : String
+webSocketPath =
+    -- "ws://0.0.0.0:5000"
+    "ws://elm-9520.herokuapp.com"
+
+
+
+-- WebSocket.send "ws://localhost:5000/score" request
+-- WebSocket.send "ws://elm-9520.herokuapp.com/score" request
+
+
 type alias Choices =
     ( List String, List String )
 
@@ -269,9 +280,7 @@ requestScore challenge input choices =
         a =
             Debug.log "sent" request
     in
-        -- WebSocket.send "ws://localhost:5000/score" request
-        -- WebSocket.send "ws://elm-9520.herokuapp.com/score" request
-        WebSocket.send "ws://0.0.0.0:5000/score" request
+        WebSocket.send (webSocketPath ++ "/score") request
 
 
 
@@ -366,7 +375,7 @@ viewMap model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    [ WebSocket.listen "ws://0.0.0.0:5000/score" Score ] |> Sub.batch
+    [ WebSocket.listen (webSocketPath ++ "/score") Score ] |> Sub.batch
 
 
 
