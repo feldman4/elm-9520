@@ -48,7 +48,8 @@ init =
 
 type AppState
     = Splash
-    | Game
+    | Prompt
+    | Map
 
 
 
@@ -57,7 +58,7 @@ type AppState
 
 type Msg
     = Click String
-    | ToGame
+    | ToState AppState
     | NoOp
 
 
@@ -65,11 +66,21 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Click choice ->
-            { model | input = model.input ++ [ choice ] }
-                ! []
+            let
+                appState =
+                    if ((List.length model.input) % 2) == 1 then
+                        Map
+                    else
+                        model.appState
+            in
+                { model
+                    | input = model.input ++ [ choice ]
+                    , appState = appState
+                }
+                    ! []
 
-        ToGame ->
-            { model | appState = Game } ! []
+        ToState appState ->
+            { model | appState = appState } ! []
 
         NoOp ->
             model ! []
@@ -85,8 +96,27 @@ view model =
         Splash ->
             viewSplash model
 
-        Game ->
-            viewGame model
+        Map ->
+            viewMap model
+
+        Prompt ->
+            viewPrompt model
+
+
+viewPrompt : Model -> Html.Html Msg
+viewPrompt model =
+    let
+        choices =
+            if ((List.length model.input) % 2) == 0 then
+                Tuple.first model.choices
+            else
+                Tuple.second model.choices
+
+        choicesList =
+            choices
+                |> List.map (\s -> ul [ class "word", onClick (Click s) ] [ text s ])
+    in
+        div [ id "prompt" ] choicesList
 
 
 viewSplash : Model -> Html.Html Msg
@@ -113,7 +143,7 @@ viewSplash model =
         introString3 =
             "Reveal him in 3 tries."
     in
-        div [ id "splash", onClick ToGame ]
+        div [ id "splash", onClick (ToState Map) ]
             [ div [ id "intro-1" ] [ text introString1 ]
             , daveDiv
             , div [ id "intro-2" ] [ text introString2 ]
@@ -122,8 +152,8 @@ viewSplash model =
             ]
 
 
-viewGame : Model -> Html.Html Msg
-viewGame model =
+viewMap : Model -> Html.Html Msg
+viewMap model =
     let
         scoreString =
             "score: " ++ (toString model.score)
@@ -131,25 +161,14 @@ viewGame model =
         challengeString =
             toString model.challenge
 
-        choices =
-            if ((List.length model.input) % 2) == 0 then
-                Tuple.first model.choices
-            else
-                Tuple.second model.choices
-
-        choicesList =
-            choices
-                |> List.map (\s -> ul [ class "word", onClick (Click s) ] [ text s ])
-
         inputString =
             "History: " ++ (String.join ", " model.input)
     in
-        div [ id "main" ]
+        div [ id "main", onClick (ToState Prompt) ]
             ([ div [ id "challenge" ] [ text challengeString ]
              , div [ id "score" ] [ text scoreString ]
+             , div [ id "input" ] [ text inputString ]
              ]
-                ++ choicesList
-                ++ [ div [ id "input" ] [ text inputString ] ]
             )
 
 

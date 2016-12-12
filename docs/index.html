@@ -8235,12 +8235,18 @@ var _feldman4$elm_xb$ComponentTemplate$Model = F5(
 	function (a, b, c, d, e) {
 		return {challenge: a, input: b, score: c, choices: d, appState: e};
 	});
-var _feldman4$elm_xb$ComponentTemplate$Game = {ctor: 'Game'};
+var _feldman4$elm_xb$ComponentTemplate$Map = {ctor: 'Map'};
 var _feldman4$elm_xb$ComponentTemplate$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'Click':
+				var appState = _elm_lang$core$Native_Utils.eq(
+					A2(
+						_elm_lang$core$Basics_ops['%'],
+						_elm_lang$core$List$length(model.input),
+						2),
+					1) ? _feldman4$elm_xb$ComponentTemplate$Map : model.appState;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -8253,15 +8259,16 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 									ctor: '::',
 									_0: _p0._0,
 									_1: {ctor: '[]'}
-								})
+								}),
+							appState: appState
 						}),
 					{ctor: '[]'});
-			case 'ToGame':
+			case 'ToState':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{appState: _feldman4$elm_xb$ComponentTemplate$Game}),
+						{appState: _p0._0}),
 					{ctor: '[]'});
 			default:
 				return A2(
@@ -8270,6 +8277,7 @@ var _feldman4$elm_xb$ComponentTemplate$update = F2(
 					{ctor: '[]'});
 		}
 	});
+var _feldman4$elm_xb$ComponentTemplate$Prompt = {ctor: 'Prompt'};
 var _feldman4$elm_xb$ComponentTemplate$Splash = {ctor: 'Splash'};
 var _feldman4$elm_xb$ComponentTemplate$init = function () {
 	var nouns = {
@@ -8326,7 +8334,9 @@ var _feldman4$elm_xb$ComponentTemplate$init = function () {
 		{ctor: '[]'});
 }();
 var _feldman4$elm_xb$ComponentTemplate$NoOp = {ctor: 'NoOp'};
-var _feldman4$elm_xb$ComponentTemplate$ToGame = {ctor: 'ToGame'};
+var _feldman4$elm_xb$ComponentTemplate$ToState = function (a) {
+	return {ctor: 'ToState', _0: a};
+};
 var _feldman4$elm_xb$ComponentTemplate$viewSplash = function (model) {
 	var introString3 = 'Reveal him in 3 tries.';
 	var impostorId = A2(
@@ -8388,7 +8398,8 @@ var _feldman4$elm_xb$ComponentTemplate$viewSplash = function (model) {
 			_0: _elm_lang$html$Html_Attributes$id('splash'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_feldman4$elm_xb$ComponentTemplate$ToGame),
+				_0: _elm_lang$html$Html_Events$onClick(
+					_feldman4$elm_xb$ComponentTemplate$ToState(_feldman4$elm_xb$ComponentTemplate$Map)),
 				_1: {ctor: '[]'}
 			}
 		},
@@ -8447,14 +8458,79 @@ var _feldman4$elm_xb$ComponentTemplate$viewSplash = function (model) {
 			}
 		});
 };
-var _feldman4$elm_xb$ComponentTemplate$Click = function (a) {
-	return {ctor: 'Click', _0: a};
-};
-var _feldman4$elm_xb$ComponentTemplate$viewGame = function (model) {
+var _feldman4$elm_xb$ComponentTemplate$viewMap = function (model) {
 	var inputString = A2(
 		_elm_lang$core$Basics_ops['++'],
 		'History: ',
 		A2(_elm_lang$core$String$join, ', ', model.input));
+	var challengeString = _elm_lang$core$Basics$toString(model.challenge);
+	var scoreString = A2(
+		_elm_lang$core$Basics_ops['++'],
+		'score: ',
+		_elm_lang$core$Basics$toString(model.score));
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('main'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_feldman4$elm_xb$ComponentTemplate$ToState(_feldman4$elm_xb$ComponentTemplate$Prompt)),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('challenge'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(challengeString),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('score'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(scoreString),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('input'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(inputString),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _feldman4$elm_xb$ComponentTemplate$Click = function (a) {
+	return {ctor: 'Click', _0: a};
+};
+var _feldman4$elm_xb$ComponentTemplate$viewPrompt = function (model) {
 	var choices = _elm_lang$core$Native_Utils.eq(
 		A2(
 			_elm_lang$core$Basics_ops['%'],
@@ -8483,77 +8559,24 @@ var _feldman4$elm_xb$ComponentTemplate$viewGame = function (model) {
 				});
 		},
 		choices);
-	var challengeString = _elm_lang$core$Basics$toString(model.challenge);
-	var scoreString = A2(
-		_elm_lang$core$Basics_ops['++'],
-		'score: ',
-		_elm_lang$core$Basics$toString(model.score));
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('main'),
+			_0: _elm_lang$html$Html_Attributes$id('prompt'),
 			_1: {ctor: '[]'}
 		},
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$id('challenge'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(challengeString),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$id('score'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(scoreString),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			},
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				choicesList,
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$id('input'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(inputString),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				})));
+		choicesList);
 };
 var _feldman4$elm_xb$ComponentTemplate$view = function (model) {
 	var _p1 = model.appState;
-	if (_p1.ctor === 'Splash') {
-		return _feldman4$elm_xb$ComponentTemplate$viewSplash(model);
-	} else {
-		return _feldman4$elm_xb$ComponentTemplate$viewGame(model);
+	switch (_p1.ctor) {
+		case 'Splash':
+			return _feldman4$elm_xb$ComponentTemplate$viewSplash(model);
+		case 'Map':
+			return _feldman4$elm_xb$ComponentTemplate$viewMap(model);
+		default:
+			return _feldman4$elm_xb$ComponentTemplate$viewPrompt(model);
 	}
 };
 var _feldman4$elm_xb$ComponentTemplate$main = _elm_lang$html$Html$program(
