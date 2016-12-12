@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = str(uuid.uuid4())
 app.debug = os.environ.get('DEBUG', '') == 'TRUE'
 sockets = Sockets(app)
 
-df_data = None
+
 
 
 @app.route('/')
@@ -35,6 +35,9 @@ def echo_socket(ws):
 def calculate_score(ws):
     while not ws.closed:
         message = ws.receive()
+        if message is None:
+            break
+        print 'message received', message
         message = json.loads(message)
         lower = lambda x: [w.lower() for w in x]
         key_words =  lower(message['challenge'])
@@ -45,9 +48,11 @@ def calculate_score(ws):
         last_words = input[-2:]
         past_words = input[:-2] + ['yokel']
 
+        df_data = pd.read_pickle('resources/mikolov_DIDB.pkl')
+        print 'df_data.shape', df_data.shape
         print 'key_words, past_words, input', key_words, past_words, last_words
         scores = insult(df_data, key_words, past_words)
-
+        # print 'unlabeled', list(scores.index)
         # return scores as ranks among choices, in range [0, 1]
         possible_scoresA = [list(scores.index).index(w) / (1.*len(scores))
                                     for w in choicesA]
@@ -120,7 +125,6 @@ def graph_transduction(Xl, Xu, yl, metric, k=16):
 
 
 if __name__ == "__main__":
-    df_data = pd.read_pickle('resources/mikolov_DIDB.pkl')
     print 'read df_data.shape', df_data.shape
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler

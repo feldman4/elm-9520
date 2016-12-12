@@ -42,7 +42,7 @@ init =
         a =
             Debug.log "word counts" ( List.length adjectives, List.length nouns )
     in
-        { challenge = [ "Rancid", "Felon" ]
+        { challenge = []
         , input = []
         , choices =
             ( [], [] )
@@ -127,8 +127,20 @@ update msg model =
                         ( Map, (requestScore model.challenge newInput model.choices) )
                     else
                         model.appState ! []
+
+                ( adj, nou, seed ) =
+                    getAdjNoun model
+
+                newModel =
+                    if ((List.length model.input) % 2) == 1 then
+                        { model
+                            | choices = ( adj, nou )
+                            , seed = seed
+                        }
+                    else
+                        model
             in
-                { model
+                { newModel
                     | input = newInput
                     , appState = appState
                 }
@@ -178,14 +190,9 @@ update msg model =
 
                 ( scoreA, scoreB ) =
                     decodeScores s
-
-                ( adj, nou, seed ) =
-                    getAdjNoun model
             in
                 { model
                     | score = model.score ++ [ ( scoreA, scoreB ) ]
-                    , choices = ( adj, nou )
-                    , seed = seed
                 }
                     ! []
 
@@ -262,7 +269,9 @@ requestScore challenge input choices =
         a =
             Debug.log "sent" request
     in
-        WebSocket.send "ws://localhost:5000/score" request
+        -- WebSocket.send "ws://localhost:5000/score" request
+        -- WebSocket.send "ws://elm-9520.herokuapp.com/score" request
+        WebSocket.send "ws://0.0.0.0:5000/score" request
 
 
 
@@ -357,7 +366,7 @@ viewMap model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    [ WebSocket.listen "ws://localhost:5000/score" Score ] |> Sub.batch
+    [ WebSocket.listen "ws://0.0.0.0:5000/score" Score ] |> Sub.batch
 
 
 
